@@ -55,7 +55,7 @@ function RelatedProducts({ currentId }: { currentId: string }) {
 
       {/* Cards */}
       <div
-        className="grid"
+        className="related-grid grid"
         style={{ gridTemplateColumns: "repeat(4, 1fr)", gap: "clamp(0.75rem, 1.5vw, 1rem)" }}
       >
         {related.map((product) => (
@@ -189,6 +189,7 @@ function SizeGuideModal({ onClose }: { onClose: () => void }) {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
       onClick={handleBackdrop}
+      className="size-guide-backdrop"
       style={{
         position:       "fixed",
         inset:          0,
@@ -206,6 +207,7 @@ function SizeGuideModal({ onClose }: { onClose: () => void }) {
         animate={{ opacity: 1, y: 0,  scale: 1    }}
         exit={{    opacity: 0, y: 12, scale: 0.98  }}
         transition={{ duration: 0.28, ease: [0.23, 1, 0.32, 1] }}
+        className="size-guide-modal"
         style={{
           background:   "#FFFFFF",
           borderRadius: 4,
@@ -235,7 +237,7 @@ function SizeGuideModal({ onClose }: { onClose: () => void }) {
         </div>
 
         {/* Table */}
-        <div style={{ overflowY: "auto", maxHeight: "60vh" }}>
+        <div className="size-guide-table" style={{ overflowY: "auto", maxHeight: "60vh" }}>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead style={{ position: "sticky", top: 0, background: "#FAFAF9" }}>
               <tr>
@@ -366,12 +368,12 @@ export default function ProductDetail({ product }: { product: Product }) {
           Volver
         </motion.button>
 
-        <div className="w-full flex" style={{ alignItems: "stretch", minHeight: "72vh" }}>
+        <div className="pd-layout w-full flex" style={{ alignItems: "stretch", minHeight: "72vh" }}>
 
           {/* ── LEFT — Product identity (25%) ────────────────────────────── */}
           <div
             ref={leftRef}
-            className="flex flex-col justify-center"
+            className="pd-left flex flex-col justify-center"
             style={{ width: "25%", paddingRight: "clamp(1.5rem, 3vw, 3rem)", borderRight: "1px solid #B8B4AC" }}
           >
             <motion.div
@@ -406,7 +408,7 @@ export default function ProductDetail({ product }: { product: Product }) {
               <div style={{ borderTop: "1px solid #B8B4AC", marginBottom: "1.5rem" }} />
 
               <p
-                className="font-body"
+                className="font-body pd-description"
                 style={{ fontSize: 14, lineHeight: "24px", color: "#5A5850", marginBottom: "1.5rem", maxWidth: "34ch" }}
               >
                 {product.description}
@@ -428,7 +430,7 @@ export default function ProductDetail({ product }: { product: Product }) {
 
           {/* ── CENTER — Floating sneaker (50%) ──────────────────────────── */}
           <div
-            className="flex items-center justify-center relative"
+            className="pd-center flex items-center justify-center relative"
             style={{ flex: 1, overflow: "hidden" }}
           >
             {/* Brand watermark — crossfades with the product */}
@@ -476,7 +478,7 @@ export default function ProductDetail({ product }: { product: Product }) {
                         width={580}
                         height={400}
                         className="object-contain"
-                        style={{ width: "clamp(300px, 40vw, 560px)", height: "auto" }}
+                        style={{ width: "clamp(200px, 70vw, 560px)", height: "auto", maxWidth: "100%" }}
                         priority
                       />
                     </div>
@@ -489,7 +491,7 @@ export default function ProductDetail({ product }: { product: Product }) {
           {/* ── RIGHT — Purchase (25%) ────────────────────────────────────── */}
           <div
             ref={rightRef}
-            className="flex flex-col justify-center"
+            className="pd-right flex flex-col justify-center"
             style={{ width: "25%", paddingLeft: "clamp(1.5rem, 3vw, 3rem)", borderLeft: "1px solid #B8B4AC" }}
           >
             <motion.div
@@ -547,7 +549,7 @@ export default function ProductDetail({ product }: { product: Product }) {
                     <div key={eu} className="flex flex-col items-center" style={{ gap: 5 }}>
                       <motion.button
                         onClick={() => setSelectedEU(eu)}
-                        className="font-body font-medium w-full"
+                        className="pd-size-btn font-body font-medium w-full"
                         style={{
                           fontSize: 12,
                           height: 36,
@@ -625,9 +627,9 @@ export default function ProductDetail({ product }: { product: Product }) {
               <motion.button
                 onClick={handleAddToCart}
                 className="font-display uppercase w-full"
-                style={{ fontSize: "clamp(0.9rem, 1.3vw, 1.1rem)", letterSpacing: "0.12em", height: 56, background: "#0A0A0A", color: "#E8E6E1", border: "none", cursor: "pointer", marginBottom: "0.75rem" }}
+                style={{ fontSize: "clamp(0.9rem, 1.3vw, 1.1rem)", letterSpacing: "0.12em", height: 56, background: "#0A0A0A", color: "#E8E6E1", border: "none", cursor: "pointer", marginBottom: "0.75rem", touchAction: "manipulation" }}
                 whileHover={{ background: "#F2BF1A", color: "#0A0A0A", scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                whileTap={{ scale: 0.97, background: "#F2BF1A", color: "#0A0A0A" }}
                 transition={{ duration: 0.16, ease: "easeOut" }}
               >
                 Agregar al carrito

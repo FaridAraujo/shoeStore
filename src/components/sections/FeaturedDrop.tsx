@@ -110,11 +110,11 @@ export default function FeaturedDrop() {
       style={{ minHeight: "100dvh" }}
     >
       {/* ── Two-column area ───────────────────────────────────────────────── */}
-      <div className="flex flex-1">
+      <div className="fd-main flex flex-1">
 
         {/* LEFT — surface #D4D0C8 */}
         <div
-          className="relative w-1/2 flex items-center justify-center overflow-hidden"
+          className="fd-left relative w-1/2 flex items-center justify-center overflow-hidden"
           style={{ background: "#D4D0C8" }}
         >
           {/* Drop label */}
@@ -133,11 +133,11 @@ export default function FeaturedDrop() {
             transition={{ duration: 0.55 }}
             className="absolute font-display pointer-events-none select-none"
             style={{
-              fontSize: "clamp(10rem, 32vw, 30rem)",
+              fontSize: "clamp(10rem, 62vw, 30rem)",
               lineHeight: 1,
               color: "#0A0A0A",
               letterSpacing: "-0.03em",
-              transform: "scaleY(1.4)",
+              transform: "scaleY(2.2)",
               transformOrigin: "center",
             }}
             aria-hidden="true"
@@ -219,7 +219,7 @@ export default function FeaturedDrop() {
 
         {/* RIGHT — concrete #E8E6E1 */}
         <div
-          className="w-1/2 flex flex-col justify-center"
+          className="fd-right w-1/2 flex flex-col justify-center"
           style={{
             background: "#E8E6E1",
             padding: "clamp(2rem, 4.5vw, 4.5rem) clamp(2.5rem, 5vw, 5rem)",
@@ -243,7 +243,7 @@ export default function FeaturedDrop() {
             <h2
               className="font-display"
               style={{
-                fontSize: "clamp(2.8rem, 5vw, 4.75rem)",
+                fontSize: "clamp(3.8rem, 9vw, 4.75rem)",
                 lineHeight: 0.92,
                 letterSpacing: "-0.01em",
                 color: "#0A0A0A",
@@ -258,44 +258,6 @@ export default function FeaturedDrop() {
             data-fd-text
             style={{ height: 1, background: "#B8B4AC", marginBottom: "1.5rem" }}
           />
-
-          <motion.p
-            key={active.id + "-desc"}
-            initial={{ y: 16, opacity: 0 }}
-            animate={{ y: 0,  opacity: 1 }}
-            transition={{ ...INFO_TRANSITION, delay: 0.05 }}
-            className="font-body"
-            style={{ fontSize: 14, lineHeight: "24px", color: "#5A5850", marginBottom: "1.25rem", maxWidth: "44ch" }}
-          >
-            {active.description}
-          </motion.p>
-
-          <motion.div
-            key={active.id + "-tags"}
-            initial={{ y: 16, opacity: 0 }}
-            animate={{ y: 0,  opacity: 1 }}
-            transition={{ ...INFO_TRANSITION, delay: 0.09 }}
-            className="flex flex-wrap gap-2"
-            style={{ marginBottom: "1.75rem" }}
-          >
-            {active.tags.map((tag) => (
-              <span
-                key={tag}
-                className="font-body"
-                style={{
-                  fontSize: 11,
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  color: "#0A0A0A",
-                  border: "1px solid #B8B4AC",
-                  borderRadius: 2,
-                  padding: "5px 14px",
-                }}
-              >
-                {tag}
-              </span>
-            ))}
-          </motion.div>
 
           <motion.div
             key={active.id + "-price"}
@@ -316,7 +278,7 @@ export default function FeaturedDrop() {
           <div data-fd-text>
             <Link
               href={`/productos/${active.id}`}
-              className="font-body font-medium uppercase transition-opacity duration-200 hover:opacity-70 active:scale-[0.98] transition-transform"
+              className="fd-cta font-body font-medium uppercase transition-opacity duration-200 hover:opacity-70 active:scale-[0.98] transition-transform"
               style={{
                 background: "#0A0A0A",
                 color: "#E8E6E1",
@@ -338,7 +300,7 @@ export default function FeaturedDrop() {
 
       {/* ── Carousel ──────────────────────────────────────────────────────── */}
       <div
-        className="w-full flex overflow-x-auto"
+        className="fd-carousel w-full flex overflow-x-auto"
         style={{ background: "#D4D0C8", borderTop: "1px solid #B8B4AC", flexShrink: 0 }}
       >
         {PRODUCTS.map((product) => {

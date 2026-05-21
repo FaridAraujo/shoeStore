@@ -5,6 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+
+// Width clamp so the drawer never overflows on small screens
+const DRAWER_WIDTH = "min(420px, 100dvw)";
 import { useCart } from "@/context/CartContext";
 import { formatPrice } from "@/lib/products";
 
@@ -69,9 +72,9 @@ export default function CartSidebar() {
           {/* ── Drawer ──────────────────────────────────────────────────── */}
           <motion.aside
             key="cart-drawer"
-            initial={{ x: 420 }}
+            initial={{ x: "100%" }}
             animate={{ x: 0 }}
-            exit={{ x: 420 }}
+            exit={{ x: "100%" }}
             transition={DRAWER_SPRING}
             role="dialog"
             aria-modal="true"
@@ -81,7 +84,7 @@ export default function CartSidebar() {
               top:           0,
               right:         0,
               bottom:        0,
-              width:         420,
+              width:         DRAWER_WIDTH,
               background:    "#E8E6E1",
               zIndex:        100,
               display:       "flex",

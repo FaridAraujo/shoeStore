@@ -32,9 +32,9 @@ export default function HeroVideo() {
       loop
       playsInline
       onError={handleError}
-      className="absolute top-0 left-0 w-full object-cover z-0"
+      className="absolute top-0 left-0 w-full object-cover z-0 hero-video"
       style={{
-      height: "calc(100% - 46px)",
+        height: "calc(100% - 46px)",
       }}
       aria-hidden="true"
     >

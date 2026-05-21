@@ -170,17 +170,18 @@ export default function Footer() {
       <div style={{ position: "relative", zIndex: 1, borderTop: `1px solid ${DIVIDER}` }}>
         <div
           data-footer-row
+          className="footer-row"
           style={{
-            display:        "flex",
-            alignItems:     "center",
-            padding:        "clamp(2rem, 3.5vw, 3rem) clamp(2rem, 5vw, 5rem)",
+            display:    "flex",
+            alignItems: "center",
+            padding:    "clamp(2rem, 3.5vw, 3rem) clamp(1.5rem, 5vw, 5rem)",
           }}
         >
 
           {/* LEFT — Tiendas inline */}
-          <div style={{ display: "flex", alignItems: "center", gap: "0.55rem", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "baseline", gap: "0.55rem", flexWrap: "wrap", flex: 1 }}>
             <span
-              className="font-body"
+              className="font-body footer-tiendas-label"
               style={{
                 fontSize:      10,
                 fontWeight:    500,
@@ -216,11 +217,8 @@ export default function Footer() {
             ))}
           </div>
 
-          {/* CENTER — pure spacer */}
-          <div style={{ flex: 1 }} />
-
           {/* RIGHT — Síguenos con íconos */}
-          <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexShrink: 0 }}>
+          <div className="footer-social" style={{ display: "flex", alignItems: "center", gap: "1rem", flexShrink: 0 }}>
             <span
               className="font-body"
               style={{

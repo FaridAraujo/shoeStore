@@ -2,9 +2,125 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prevent any overflowing child from creating horizontal scroll on mobile.
+   Only set overflow-x on body — NOT on html. Setting it on both shifts the
+   scroll container to <body> in Chrome, which breaks GSAP ScrollTrigger's
+   window-based position calculations across all scroll-driven animations. */
+body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
 /* ─── Auth layout helpers ─────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .hidden-mobile { display: none !important; }
+
+  /* Hero X logo — reduce scale so PRÓXIMO doesn't overflow on narrow screens */
+  .hero-x-logo {
+    transform: scale(1.15) translateX(-0.05em) !important;
+  }
+
+  /* Hero video — full height on mobile (portrait has no need for the 46px seam gap) */
+  .hero-video {
+    height: 100% !important;
+  }
+
+  /* Hero outro — oculto en mobile, no hay transición de color que cubrir */
+  [data-hero-outro] {
+    display: none !important;
+  }
+
+  /* ── FeaturedDrop mobile ───────────────────────────────────────────── */
+  .fd-main     { flex-direction: column !important; }
+  .fd-left     { width: 100% !important; min-height: 72vw; }
+  .fd-right    { width: 100% !important; }
+  .fd-cta      { width: 100% !important; }
+  /* Carousel sube al tope — borde pasa de arriba a abajo */
+  .fd-carousel { order: -1; border-top: none !important; border-bottom: 1px solid #B8B4AC; }
+
+  /* ── ProductDetail mobile layout ──────────────────────────────────── */
+  .pd-layout    { flex-direction: column !important; min-height: 0 !important; }
+  .pd-left      { order: 3; width: 100% !important; padding-right: 0 !important;
+                  border-right: none !important; border-top: 1px solid #B8B4AC;
+                  padding-top: 1.5rem !important; }
+  .pd-center    { order: 1; flex: unset !important; padding-top: 2.5rem; }
+  .pd-right     { order: 2; width: 100% !important; padding-left: 0 !important;
+                  border-left: none !important; border-top: 1px solid #B8B4AC;
+                  padding-top: 1.5rem !important; }
+  .pd-size-btn  { height: 44px !important; }
+  .related-grid { grid-template-columns: repeat(2, 1fr) !important; }
+
+  /* ── FeaturedDrop — quita el minHeight de 100dvh en mobile para que no
+        deje espacio vacío debajo del contenido apilado ──────────────────── */
+  #featured-drop { min-height: 0 !important; }
+
+  /* ── ProductDetail — oculta descripción en mobile, solo etiquetas ──────── */
+  .pd-description { display: none !important; margin-bottom: 0 !important; }
+
+  /* ── Size Guide Modal — bottom sheet en mobile ────────────────────────── */
+  .size-guide-backdrop {
+    padding: 0 !important;
+    align-items: flex-end !important;
+  }
+  .size-guide-modal {
+    border-radius: 12px 12px 0 0 !important;
+    max-height: 82vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+  }
+  .size-guide-table {
+    max-height: 42vh !important;
+    flex: 1 !important;
+  }
+
+
+  /* ── Sucursales — reduce padding de items para igualar alto de la foto ── */
+  [data-location-item] { padding-top: 7px !important; padding-bottom: 7px !important; }
+
+  /* ── Hero words — un poco más grandes en mobile ───────────────────────── */
+  [data-hero-word]:nth-child(1),
+  [data-hero-word]:nth-child(3) { font-size: clamp(6rem, 24vw, 15rem) !important; }
+  [data-hero-word]:nth-child(2) { font-size: clamp(4.4rem, 17vw, 10.5rem) !important; }
+
+  /* ── Collection band — padding-top para bajar el título dentro de la franja */
+  .col-band { padding-top: 2rem !important; padding-bottom: 1.5rem !important; }
+}
+
+/* ── Collection band — solo visible en mobile ───────────────────────────── */
+@media (min-width: 769px) {
+  .col-band {
+    background: #E8E6E1 !important;
+    box-shadow: none !important;
+    padding-top: clamp(3rem, 5vw, 5rem) !important;
+  }
+  .col-grid {
+    padding-top: clamp(1rem, 2vw, 1.75rem) !important;
+  }
+  .col-band-watermark { display: none !important; }
+}
+
+/* Show "Agregar" button on touch devices (no hover state available) */
+@media (hover: none) {
+  .card-add-btn { opacity: 1 !important; transform: translateY(0) !important; }
+}
+
+/* ── Footer mobile ──────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .footer-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1.5rem;
+  }
+  .footer-social {
+    border-top: 1px solid #2A2724;
+    padding-top: 1.5rem;
+    width: 100%;
+  }
+  .footer-tiendas-label {
+    width: 100%;
+    margin-bottom: 0.25rem;
+  }
 }
 
 /* ─── SNEAX Design Tokens ────────────────────────────────────────────────── */

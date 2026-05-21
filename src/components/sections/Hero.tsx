@@ -51,6 +51,7 @@ function ProximoContent({ style }: { style: CSSProperties }) {
         aria-hidden="true"
         width={120}
         height={120}
+        className="hero-x-logo"
         style={{
           display: "inline-block",
           height: "0.9em",
@@ -80,13 +81,11 @@ export default function Hero() {
         tree and causes "removeChild: node is not a child" crashes when the
         page unmounts on navigation.
       */}
-      <div data-hero-track style={{ height: "240dvh" }}>
       <section
         id="hero"
         data-hero-section
         data-nav-theme="dark"
-        className="h-[100dvh] bg-[#0A0A0A] overflow-hidden flex flex-col items-center justify-center"
-        style={{ position: "sticky", top: 0 }}
+        className="h-[100dvh] w-full bg-[#0A0A0A] overflow-hidden flex flex-col items-center justify-center"
       >
         {/* Video layer */}
         <HeroVideo />
@@ -163,11 +162,10 @@ export default function Hero() {
         <HeroAnimations />
         <HeroMagnetic />
       </section>
-      </div>
 
       <div
         data-hero-outro
-        className="-mt-[3px] h-[18vh] w-full bg-[#0A0A0A] pointer-events-none"
+        className="-mt-[3px] h-[4px] w-full bg-[#0A0A0A] pointer-events-none"
         aria-hidden="true"
       />
     </>

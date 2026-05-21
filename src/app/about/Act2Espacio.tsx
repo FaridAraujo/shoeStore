@@ -31,28 +31,29 @@ export default function Act2Espacio() {
           trigger: trackRef.current,
           start:   "top top",
           end:     "bottom bottom",
-          scrub:   1.5,
+          scrub:   0.5,
         },
       });
 
-      // Words stagger in across 0–70% of scroll progress
+      // Words stagger in across 0–40% of scroll progress
+      // stagger 0.02 × 8 words = last word starts at 0.16, ends at 0.16+0.18 = 0.34
       tl.to(
         wordsRef.current,
         {
           opacity:  1,
           y:        0,
-          stagger:  0.055,
+          stagger:  0.02,
           ease:     "power3.out",
-          duration: 0.5,
+          duration: 0.18,
         },
         0,
       );
 
-      // Subtext fades in at 72 %
+      // Subtext fades in at 45%
       tl.to(
         subtextRef.current,
-        { opacity: 1, y: 0, ease: "power2.out", duration: 0.25 },
-        0.72,
+        { opacity: 1, y: 0, ease: "power2.out", duration: 0.2 },
+        0.45,
       );
     }, trackRef);
 

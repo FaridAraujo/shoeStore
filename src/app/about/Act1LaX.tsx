@@ -197,7 +197,7 @@ export default function Act1LaX() {
           trigger: trackRef.current,
           start:   "top top",
           end:     "bottom bottom",
-          scrub:   1.2,
+          scrub:   0.5,
           onUpdate(self) {
             progressRef.current = self.progress;
           },

@@ -11,11 +11,10 @@ export default function HeroAnimations() {
     const rafId = requestAnimationFrame(() => {
       ctx = gsap.context(() => {
         const hero = document.querySelector<HTMLElement>("[data-hero-section]");
-        const track = document.querySelector<HTMLElement>("[data-hero-track]");
         const words = gsap.utils.toArray<HTMLElement>("[data-hero-word]");
         const outro = document.querySelector<HTMLElement>("[data-hero-outro]");
 
-        if (!hero || !track || words.length < 3) return;
+        if (!hero || words.length < 3) return;
 
         // ── Initial state ──────────────────────────────────────────────────
         // Words start invisible and slightly below — no overflow-hidden needed,
@@ -31,19 +30,17 @@ export default function HeroAnimations() {
         //
         // Each word occupies ~27% of that travel, with pauses between them
         // so the reader registers each word before the next rises.
-        const pinTl = gsap.timeline({
-          scrollTrigger: {
-            trigger: track,
-            start: "top top",
-            end: "bottom bottom",
-            scrub: 1.5,   // lag makes text feel heavy, like stone
-          },
-        });
+        const isMobile = window.innerWidth < 768;
 
-        pinTl
-          .to(words[0], { y: 0, opacity: 1, ease: "power3.out", duration: 0.25 }, 0.05)
-          .to(words[1], { y: 0, opacity: 1, ease: "power3.out", duration: 0.25 }, 0.28)
-          .to(words[2], { y: 0, opacity: 1, ease: "power3.out", duration: 0.25 }, 0.52);
+        // Ambos mobile y desktop: animación al cargar (sin scroll travel extra).
+        // Mobile: rápido. Desktop: ligeramente más dramático.
+        gsap.to(words, {
+          y: 0, opacity: 1,
+          stagger: isMobile ? 0.2 : 0.28,
+          duration: isMobile ? 0.7 : 0.85,
+          ease: "power3.out",
+          delay: isMobile ? 0.35 : 0.45,
+        });
 
         // ── Concrete materialisation ───────────────────────────────────────
         // THREE elements animate together on the same ScrollTrigger:
@@ -55,29 +52,43 @@ export default function HeroAnimations() {
         // Adding the section itself is the real fix: even if the mask leaves
         // a 1px translucent row at the very bottom, the section bg behind it
         // is also lightening, so no dark line is ever exposed.
-        const bottomGrad = document.querySelector<HTMLElement>("[data-hero-bottom-grad]");
+        const bottomGrad  = document.querySelector<HTMLElement>("[data-hero-bottom-grad]");
         const bottomSolid = document.querySelector<HTMLElement>("[data-hero-bottom-solid]");
-        const seamFix = document.querySelector<HTMLElement>("[data-hero-seam-fix]");
+        const seamFix     = document.querySelector<HTMLElement>("[data-hero-seam-fix]");
 
-        const concreteTargets = [
-          hero,
-          bottomGrad,
-          bottomSolid,
-          seamFix,
-          outro,
-        ].filter(Boolean) as HTMLElement[];
-
-        if (concreteTargets.length) {
-          gsap.to(concreteTargets, {
-            backgroundColor: "#E8E6E1",
-            ease: "none",
-            scrollTrigger: {
-              trigger: outro,
-              start: "top 80%",
-              end: "bottom 30%",
-              scrub: 4,
-            },
-          });
+        if (isMobile) {
+          // Mobile: aclara mientras el hero sale de pantalla.
+          const mobileTargets = [hero, bottomGrad, bottomSolid]
+            .filter(Boolean) as HTMLElement[];
+          if (mobileTargets.length) {
+            gsap.to(mobileTargets, {
+              backgroundColor: "#E8E6E1",
+              ease: "none",
+              scrollTrigger: {
+                trigger: hero,
+                start: "top top",
+                end: "bottom top",
+                scrub: 1.5,
+              },
+            });
+          }
+        } else {
+          // Desktop: transición de color al llegar a FeaturedDrop.
+          const featured = document.querySelector<HTMLElement>("#featured-drop");
+          const desktopTargets = [hero, bottomGrad, bottomSolid, outro]
+            .filter(Boolean) as HTMLElement[];
+          if (desktopTargets.length && featured) {
+            gsap.to(desktopTargets, {
+              backgroundColor: "#E8E6E1",
+              ease: "none",
+              scrollTrigger: {
+                trigger: featured,
+                start: "top 80%",
+                end: "top 20%",
+                scrub: 3,
+              },
+            });
+          }
         }
 
         // ── Layout refresh ─────────────────────────────────────────────────

@@ -70,8 +70,8 @@ function SizePopover({
               className="font-body font-medium"
               style={{
                 fontSize:    11,
-                width:       36,
-                height:      30,
+                width:       40,
+                height:      40,
                 border:      `1px solid ${isAdded ? "#F2BF1A" : dark ? "rgba(240,237,232,0.15)" : "rgba(10,10,10,0.15)"}`,
                 background:  isAdded ? "#F2BF1A" : "transparent",
                 color:       isAdded ? "#0A0A0A" : dark ? "#F0EDE8" : "#0A0A0A",
@@ -101,16 +101,20 @@ function ProductCard({ product, index, dark }: { product: Product; index: number
     router.prefetch(`/productos/${product.id}`);
   }, [router, product.id]);
 
-  // Close popover on outside click
+  // Close popover on outside click / tap
   useEffect(() => {
     if (!popoverOpen) return;
-    function handleClick(e: MouseEvent) {
+    function handleClick(e: MouseEvent | TouchEvent) {
       if (cardRef.current && !cardRef.current.contains(e.target as Node)) {
         setPopoverOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
+    document.addEventListener("touchstart", handleClick as EventListener);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("touchstart", handleClick as EventListener);
+    };
   }, [popoverOpen]);
 
   return (
@@ -120,8 +124,8 @@ function ProductCard({ product, index, dark }: { product: Product; index: number
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{
-        opacity: { delay: (index % 3) * 0.06, duration: 0.5, ease: [0.23, 1, 0.32, 1] },
-        y:       { delay: (index % 3) * 0.06, duration: 0.5, ease: [0.23, 1, 0.32, 1] },
+        opacity: { delay: (index % 2) * 0.06, duration: 0.5, ease: [0.23, 1, 0.32, 1] },
+        y:       { delay: (index % 2) * 0.06, duration: 0.5, ease: [0.23, 1, 0.32, 1] },
       }}
       whileHover="hovered"
       onClick={() => router.push(`/productos/${product.id}`)}
@@ -143,45 +147,57 @@ function ProductCard({ product, index, dark }: { product: Product; index: number
             </div>
           ) : (
             <div className="w-full h-full relative">
-              {product.id !== "asics-gel-1130" && (
-                <div
-                  aria-hidden="true"
-                  className="absolute left-1/2 bottom-3"
-                  style={{
-                    transform: "translateX(-50%)",
-                    width: "65%", height: 18,
-                    background: dark ? "rgba(0,0,0,0.7)" : "rgba(0,0,0,0.45)",
-                    borderRadius: "50%", filter: "blur(10px)",
-                  }}
-                />
-              )}
-              <motion.div
+              {/* Sombra — fuera del blend-mode para no verse afectada */}
+              <div
+                aria-hidden="true"
+                className="absolute left-1/2 bottom-3"
+                style={{
+                  transform: "translateX(-50%)",
+                  width: "65%", height: 18,
+                  background: dark ? "rgba(0,0,0,0.7)" : "rgba(0,0,0,0.45)",
+                  borderRadius: "50%", filter: "blur(10px)",
+                  zIndex: 0,
+                }}
+              />
+              {/*
+                Blend wrapper — div plano (no GPU) que envuelve el motion.div.
+                El browser compila primero todo el subtree (incl. la capa GPU de
+                Framer Motion), y luego aplica multiply sobre el backdrop beige.
+                Blanco × #D4D0C8 = #D4D0C8 → los fondos blancos de las imágenes
+                desaparecen y quedan iguales al resto de los cards.
+              */}
+              <div
                 className="absolute inset-0"
-                variants={{ hovered: { scale: 1.04 } }}
-                transition={{ duration: 0.45, ease: [0.23, 1, 0.32, 1] }}
+                style={{ zIndex: 1 }}
               >
-                <Image
-                  src={product.image}
-                  alt={`${product.brand} ${product.name}`}
-                  fill
-                  className="object-contain"
-                  style={{
-                    objectPosition: "center",
-                    transform: product.id === "adidas-ballerina-bad-bunny" ? "translateY(15%)" : undefined,
-                  }}
-                  onError={() => setImgError(true)}
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                />
-              </motion.div>
+                <motion.div
+                  className="absolute inset-0"
+                  variants={{ hovered: { scale: 1.04 } }}
+                  transition={{ duration: 0.45, ease: [0.23, 1, 0.32, 1] }}
+                >
+                  <Image
+                    src={product.image}
+                    alt={`${product.brand} ${product.name}`}
+                    fill
+                    className="object-contain"
+                    style={{
+                      objectPosition: "center",
+                      transform: product.id === "adidas-ballerina-bad-bunny" ? "translateY(15%)" : undefined,
+                    }}
+                    onError={() => setImgError(true)}
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                  />
+                </motion.div>
+              </div>
             </div>
           )}
         </div>
       </div>
 
-      {/* Info area */}
+      {/* Info area — flex:1 para cubrir cualquier espacio restante del card */}
       <div
         className="relative flex flex-col"
-        style={{ background: dark ? "#111111" : "#E8E6E1", padding: "14px 16px 16px", borderRadius: "0 0 3px 3px" }}
+        style={{ flex: 1, background: dark ? "#111111" : "#E8E6E1", padding: "14px 16px 16px", borderRadius: "0 0 3px 3px" }}
       >
         <span
           className="font-body font-medium uppercase"
@@ -226,7 +242,7 @@ function ProductCard({ product, index, dark }: { product: Product; index: number
               initial={{ opacity: 0, y: 6 }}
               transition={{ duration: 0.18, ease: "easeOut" }}
               onClick={(e) => { e.stopPropagation(); setPopoverOpen((v) => !v); }}
-              className="font-body font-medium uppercase"
+              className="card-add-btn font-body font-medium uppercase"
               style={{
                 fontSize:     10,
                 letterSpacing: "0.14em",
@@ -254,13 +270,16 @@ function ProductCard({ product, index, dark }: { product: Product; index: number
 
 export default function Collection({
   initialBrand,
-  newDropsOnly = false,
-  showSearch   = false,
+  newDropsOnly  = false,
+  showSearch    = false,
+  previewLimit,
 }: {
   initialBrand?:  BrandFilter;
   newDropsOnly?:  boolean;
   showSearch?:    boolean;
+  previewLimit?:  number;
 } = {}) {
+  const isPreview = previewLimit !== undefined;
   const dark = newDropsOnly;
 
   const ITEMS_PER_PAGE = 9;
@@ -357,8 +376,44 @@ export default function Collection({
       id="coleccion"
       data-nav-theme={dark ? "dark-glass" : "light"}
       className="w-full"
-      style={{ background: sectionBg, padding: `${dark ? "clamp(4rem, 8vw, 7rem)" : "1.75rem"} clamp(1.5rem, 5vw, 5rem) clamp(2rem, 4vw, 3rem)` }}
+      style={{ background: sectionBg }}
     >
+      {/* ── Header band ──────────────────────────────────────────────── */}
+      <div
+        className={dark ? undefined : "col-band"}
+        style={{
+          position: "relative",
+          overflow: "hidden",
+          background: dark ? sectionBg : "#C8C3BA",
+          padding: dark
+            ? `clamp(4rem, 8vw, 7rem) clamp(1.5rem, 5vw, 5rem) clamp(2rem, 4vw, 3rem)`
+            : `clamp(1.25rem, 2vw, 2rem) clamp(1.5rem, 5vw, 5rem) clamp(3rem, 5vw, 5rem)`,
+          boxShadow: dark ? undefined : "inset 0 8px 24px rgba(0,0,0,0.08), inset 0 -8px 24px rgba(0,0,0,0.06)",
+        }}
+      >
+        {/* Watermark "NUESTRA" — visible solo en mobile (oculto en desktop via CSS) */}
+        {!dark && (
+          <span
+            aria-hidden="true"
+            className="col-band-watermark font-display pointer-events-none select-none"
+            style={{
+              position:      "absolute",
+              top:           "50%",
+              left:          "50%",
+              transform:     "translate(-50%, -50%)",
+              fontSize:      "clamp(4.5rem, 26vw, 10rem)",
+              lineHeight:    1,
+              color:         "#0A0A0A",
+              opacity:       0.08,
+              letterSpacing: "-0.02em",
+              whiteSpace:    "nowrap",
+              zIndex:        0,
+            }}
+          >
+            NUESTRA
+          </span>
+        )}
+
       {/* ── Search bar (collection page only) ───────────────────────── */}
       {showSearch && !dark && (
         <div
@@ -430,59 +485,55 @@ export default function Collection({
       )}
 
       {/* ── Header ───────────────────────────────────────────────────── */}
-      <div
-        data-col-header
-        className="flex items-baseline justify-between"
-        style={{ marginBottom: filtersOpen ? "1.5rem" : "3rem", transition: "margin 300ms ease" }}
-      >
-        <h2
-          className="font-display"
-          style={{ fontSize: "clamp(3rem, 6vw, 5rem)", lineHeight: 0.9, letterSpacing: "-0.01em", color: titleColor }}
-        >
-          {dark ? "Nuevos Lanzamientos" : "Colección"}
-        </h2>
+      <div>
 
-        <div className="flex items-center gap-4">
-          {/* Count */}
-          <span
-            className="font-body"
-            style={{ fontSize: 12, color: countColor, letterSpacing: "0.06em" }}
-          >
-            {filtered.length} {filtered.length === 1 ? "par" : "pares"}
-          </span>
+        {/* Controls row — count + filter toggle, right-aligned */}
+        {!isPreview && (
+          <div className="flex items-center justify-end" style={{ marginBottom: "0.6rem" }}>
+            <div className="flex items-center gap-4">
+              {/* Count */}
+              <span
+                className="font-body"
+                style={{ fontSize: 12, color: countColor, letterSpacing: "0.06em" }}
+              >
+                {filtered.length} {filtered.length === 1 ? "par" : "pares"}
+              </span>
 
-          {/* Filter toggle */}
-          <motion.button
-            onClick={() => setFiltersOpen((v) => !v)}
-            className="font-body font-medium uppercase flex items-center gap-2"
-            style={{
-              fontSize:      11,
-              letterSpacing: "0.15em",
-              color:         ftColor,
-              background:    ftBg,
-              border:        `1px solid ${ftBorder}`,
-              padding:       "6px 14px",
-              cursor:        "pointer",
-            }}
-            whileHover={ftHoverOn}
-            transition={{ duration: 0.15, ease: "easeOut" }}
-            aria-expanded={filtersOpen}
-          >
-            {isFiltered ? activeFilter : "Filtrar"}
-            <motion.span
-              animate={{ rotate: filtersOpen ? 180 : 0 }}
-              transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
-              style={{ fontSize: 10, lineHeight: 1, display: "inline-block" }}
-              aria-hidden="true"
-            >
-              ▾
-            </motion.span>
-          </motion.button>
-        </div>
+              {/* Filter toggle */}
+              <motion.button
+                onClick={() => setFiltersOpen((v) => !v)}
+                className="font-body font-medium uppercase flex items-center gap-2"
+                style={{
+                  fontSize:      11,
+                  letterSpacing: "0.15em",
+                  color:         ftColor,
+                  background:    ftBg,
+                  border:        `1px solid ${ftBorder}`,
+                  padding:       "6px 14px",
+                  cursor:        "pointer",
+                }}
+                whileHover={ftHoverOn}
+                transition={{ duration: 0.15, ease: "easeOut" }}
+                aria-expanded={filtersOpen}
+              >
+                {isFiltered ? activeFilter : "Filtrar"}
+                <motion.span
+                  animate={{ rotate: filtersOpen ? 180 : 0 }}
+                  transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
+                  style={{ fontSize: 10, lineHeight: 1, display: "inline-block" }}
+                  aria-hidden="true"
+                >
+                  ▾
+                </motion.span>
+              </motion.button>
+            </div>
+          </div>
+        )}
+
       </div>
 
       {/* ── Filter pills ─────────────────────────────────────────────── */}
-      <div
+      {!isPreview && <div
         style={{
           display: "grid",
           gridTemplateRows: filtersOpen ? "1fr" : "0fr",
@@ -538,17 +589,54 @@ export default function Collection({
             })}
           </div>
         </div>
-      </div>
+      </div>}
+
+        {/* Title — lives in the band, bleeds below via negative marginBottom */}
+        <h2
+          data-col-header
+          className="font-display"
+          style={{
+            fontSize:      "clamp(3.5rem, 7vw, 5.5rem)",
+            lineHeight:    0.9,
+            letterSpacing: "-0.01em",
+            color:         titleColor,
+            position:      "relative",
+            zIndex:        2,
+            marginBottom:  0,
+          }}
+        >
+          {dark ? "Nuevos Lanzamientos" : "Colección"}
+        </h2>
+
+      </div>{/* end header band */}
+
+      {/* ── Grid area ────────────────────────────────────────────────── */}
+      {/* paddingTop must clear the h2 that bleeds down from the band.
+          h2 height ≈ fontSize×lineHeight = clamp(3.5,7vw,5.5rem)×0.9 ≈ clamp(3.15rem,6.3vw,4.95rem)
+          55% of that ≈ clamp(1.73rem,3.5vw,2.72rem) + breathing room ≈ clamp(3.5rem,6vw,5rem) */}
+      <div
+        className={dark ? undefined : "col-grid"}
+        style={{
+          background: sectionBg,
+          position: "relative",
+          zIndex: 0,
+          padding: dark
+            ? `0 clamp(1.5rem, 5vw, 5rem) clamp(2rem, 4vw, 3rem)`
+            : `clamp(2rem, 3.5vw, 3rem) clamp(1.5rem, 5vw, 5rem) clamp(2rem, 4vw, 3rem)`,
+        }}
+      >
 
       {/* ── Product grid ─────────────────────────────────────────────── */}
       {(() => {
         const totalPages  = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
         const safePage    = Math.min(page, totalPages);
-        const pageItems   = filtered.slice((safePage - 1) * ITEMS_PER_PAGE, safePage * ITEMS_PER_PAGE);
+        const pageItems   = isPreview
+          ? filtered.slice(0, previewLimit)
+          : filtered.slice((safePage - 1) * ITEMS_PER_PAGE, safePage * ITEMS_PER_PAGE);
 
         return (
           <>
-            <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
+            <div className="grid gap-3 grid-cols-2 md:grid-cols-3">
               {pageItems.map((product, index) => (
                 <ProductCard key={product.id} product={product} index={index} dark={dark} />
               ))}
@@ -568,8 +656,34 @@ export default function Collection({
               </motion.div>
             )}
 
+            {/* ── Ver todo CTA (modo preview) ──────────────────────────── */}
+            {isPreview && (
+              <div className="flex justify-center" style={{ marginTop: "2.5rem" }}>
+                <a
+                  href="/collection"
+                  className="font-body font-medium uppercase"
+                  style={{
+                    fontSize:       11,
+                    letterSpacing:  "0.18em",
+                    color:          dark ? "#F0EDE8" : "#0A0A0A",
+                    textDecoration: "none",
+                    border:         `1px solid ${dark ? "rgba(240,237,232,0.25)" : "rgba(10,10,10,0.2)"}`,
+                    padding:        "14px 40px",
+                    display:        "inline-flex",
+                    alignItems:     "center",
+                    gap:            10,
+                    transition:     "opacity 180ms ease",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.6")}
+                  onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+                >
+                  Ver toda la colección →
+                </a>
+              </div>
+            )}
+
             {/* ── Pagination ───────────────────────────────────────────── */}
-            {totalPages > 1 && (
+            {!isPreview && totalPages > 1 && (
               <div
                 className="flex items-center justify-center"
                 style={{ marginTop: "3rem", gap: 4 }}
@@ -663,6 +777,7 @@ export default function Collection({
           </>
         );
       })()}
+      </div>{/* end grid area */}
     </section>
   );
 }

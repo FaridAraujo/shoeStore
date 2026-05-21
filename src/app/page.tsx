@@ -4,6 +4,7 @@ import Hero from "@/components/sections/Hero";
 import FeaturedDrop from "@/components/sections/FeaturedDrop";
 import Collection from "@/components/sections/Collection";
 import Sucursales from "@/components/sections/Sucursales";
+import AboutCTA from "@/components/sections/AboutCTA";
 
 /*
   Nav is fixed-position, so it sits above the scroll flow.
@@ -16,8 +17,9 @@ export default function Home() {
       <Nav />
       <Hero />
       <FeaturedDrop />
-      <Collection />
+      <Collection previewLimit={6} />
       <Sucursales />
+      <AboutCTA />
       <Footer />
     </>
   );
