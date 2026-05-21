@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { gsap } from "@/lib/gsap";
+import { useCart } from "@/context/CartContext";
 import {
   PRODUCTS,
   BRANDS,
@@ -14,14 +15,107 @@ import {
 } from "@/lib/products";
 import { useCollectionSearch } from "@/context/CollectionSearchContext";
 
+// ─── Size Popover ─────────────────────────────────────────────────────────────
+
+function SizePopover({
+  product,
+  dark,
+  onClose,
+}: {
+  product: Product;
+  dark: boolean;
+  onClose: () => void;
+}) {
+  const { addItem } = useCart();
+  const [added, setAdded] = useState<number | null>(null);
+
+  function pick(size: number) {
+    addItem(product, size);
+    setAdded(size);
+    setTimeout(() => { setAdded(null); onClose(); }, 700);
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 6, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 4, scale: 0.97 }}
+      transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
+      style={{
+        position:   "absolute",
+        bottom:     "calc(100% + 8px)",
+        right:      0,
+        zIndex:     20,
+        background: dark ? "#1C1C1C" : "#FFFFFF",
+        border:     `1px solid ${dark ? "rgba(240,237,232,0.12)" : "rgba(10,10,10,0.1)"}`,
+        borderRadius: 3,
+        padding:    "10px 12px",
+        minWidth:   160,
+        boxShadow:  "0 8px 24px rgba(0,0,0,0.18)",
+      }}
+    >
+      <p
+        className="font-body font-medium uppercase"
+        style={{ fontSize: 9, letterSpacing: "0.22em", color: dark ? "rgba(240,237,232,0.35)" : "#B8B4AC", marginBottom: 8 }}
+      >
+        Seleccioná talla (EU)
+      </p>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+        {product.sizes.map((size) => {
+          const isAdded = added === size;
+          return (
+            <button
+              key={size}
+              onClick={(e) => { e.stopPropagation(); pick(size); }}
+              className="font-body font-medium"
+              style={{
+                fontSize:    11,
+                width:       36,
+                height:      30,
+                border:      `1px solid ${isAdded ? "#F2BF1A" : dark ? "rgba(240,237,232,0.15)" : "rgba(10,10,10,0.15)"}`,
+                background:  isAdded ? "#F2BF1A" : "transparent",
+                color:       isAdded ? "#0A0A0A" : dark ? "#F0EDE8" : "#0A0A0A",
+                cursor:      "pointer",
+                borderRadius: 2,
+                transition:  "background 120ms ease, border-color 120ms ease, color 120ms ease",
+              }}
+            >
+              {size}
+            </button>
+          );
+        })}
+      </div>
+    </motion.div>
+  );
+}
+
 // ─── Product Card ─────────────────────────────────────────────────────────────
 
 function ProductCard({ product, index, dark }: { product: Product; index: number; dark: boolean }) {
-  const [imgError, setImgError] = useState(false);
-  const router = useRouter();
+  const [imgError,     setImgError]     = useState(false);
+  const [popoverOpen,  setPopoverOpen]  = useState(false);
+  const cardRef  = useRef<HTMLElement>(null);
+  const router   = useRouter();
+
+  useEffect(() => {
+    router.prefetch(`/productos/${product.id}`);
+  }, [router, product.id]);
+
+  // Close popover on outside click
+  useEffect(() => {
+    if (!popoverOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (cardRef.current && !cardRef.current.contains(e.target as Node)) {
+        setPopoverOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [popoverOpen]);
 
   return (
     <motion.article
+      ref={cardRef}
       initial={{ opacity: 0, y: 32 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
@@ -35,10 +129,7 @@ function ProductCard({ product, index, dark }: { product: Product; index: number
       style={{ background: dark ? "#181818" : "#D4D0C8", borderRadius: 3 }}
     >
       {/* Image area */}
-      <div
-        className="relative"
-        style={{ paddingTop: "65%", borderRadius: "3px 3px 0 0" }}
-      >
+      <div className="relative" style={{ paddingTop: "65%", borderRadius: "3px 3px 0 0" }}>
         <div
           className="absolute inset-0 flex items-center justify-center p-6"
           style={{ overflow: "hidden", borderRadius: "3px 3px 0 0" }}
@@ -52,18 +143,15 @@ function ProductCard({ product, index, dark }: { product: Product; index: number
             </div>
           ) : (
             <div className="w-full h-full relative">
-              {/* Ground shadow — skip for products with baked-in shadow */}
               {product.id !== "asics-gel-1130" && (
                 <div
                   aria-hidden="true"
                   className="absolute left-1/2 bottom-3"
                   style={{
                     transform: "translateX(-50%)",
-                    width: "65%",
-                    height: 18,
+                    width: "65%", height: 18,
                     background: dark ? "rgba(0,0,0,0.7)" : "rgba(0,0,0,0.45)",
-                    borderRadius: "50%",
-                    filter: "blur(10px)",
+                    borderRadius: "50%", filter: "blur(10px)",
                   }}
                 />
               )}
@@ -117,31 +205,45 @@ function ProductCard({ product, index, dark }: { product: Product; index: number
           )}
         </span>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between" style={{ position: "relative" }}>
           <span className="font-body font-medium" style={{ fontSize: 14, color: dark ? "#F0EDE8" : "#0A0A0A" }}>
             {formatPrice(product.price)}
           </span>
 
-          <motion.button
-            variants={{ hovered: { opacity: 1, y: 0 } }}
-            initial={{ opacity: 0, y: 6 }}
-            transition={{ duration: 0.18, ease: "easeOut" }}
-            onClick={(e) => e.stopPropagation()}
-            className="font-body font-medium uppercase"
-            style={{
-              fontSize: 10,
-              letterSpacing: "0.14em",
-              background: "#F2BF1A",
-              color: "#0A0A0A",
-              border: "none",
-              padding: "6px 12px",
-              borderRadius: 2,
-              cursor: "pointer",
-            }}
-            aria-label={`Agregar ${product.name} al carrito`}
-          >
-            Agregar
-          </motion.button>
+          <div style={{ position: "relative" }}>
+            <AnimatePresence>
+              {popoverOpen && (
+                <SizePopover
+                  product={product}
+                  dark={dark}
+                  onClose={() => setPopoverOpen(false)}
+                />
+              )}
+            </AnimatePresence>
+
+            <motion.button
+              variants={{ hovered: { opacity: 1, y: 0 } }}
+              initial={{ opacity: 0, y: 6 }}
+              transition={{ duration: 0.18, ease: "easeOut" }}
+              onClick={(e) => { e.stopPropagation(); setPopoverOpen((v) => !v); }}
+              className="font-body font-medium uppercase"
+              style={{
+                fontSize:     10,
+                letterSpacing: "0.14em",
+                background:   popoverOpen ? "#0A0A0A" : "#F2BF1A",
+                color:        popoverOpen ? "#F2BF1A" : "#0A0A0A",
+                border:       "none",
+                padding:      "6px 12px",
+                borderRadius: 2,
+                cursor:       "pointer",
+                transition:   "background 150ms ease, color 150ms ease",
+              }}
+              aria-label={`Agregar ${product.name} al carrito`}
+              aria-expanded={popoverOpen}
+            >
+              Agregar
+            </motion.button>
+          </div>
         </div>
       </div>
     </motion.article>
@@ -153,14 +255,19 @@ function ProductCard({ product, index, dark }: { product: Product; index: number
 export default function Collection({
   initialBrand,
   newDropsOnly = false,
+  showSearch   = false,
 }: {
   initialBrand?:  BrandFilter;
   newDropsOnly?:  boolean;
+  showSearch?:    boolean;
 } = {}) {
-  const dark = newDropsOnly; // shorthand used throughout for theme switching
+  const dark = newDropsOnly;
+
+  const ITEMS_PER_PAGE = 9;
 
   const [activeFilter, setActiveFilter] = useState<BrandFilter>(initialBrand ?? "TODOS");
-  const [filtersOpen, setFiltersOpen]   = useState(false);
+  const [filtersOpen,  setFiltersOpen]  = useState(false);
+  const [page,         setPage]         = useState(1);
   const sectionRef  = useRef<HTMLElement>(null);
   const searchRef   = useRef<HTMLDivElement>(null);
   const inputRef    = useRef<HTMLInputElement>(null);
@@ -170,7 +277,7 @@ export default function Collection({
   // Tell Nav whether the in-page search bar is visible.
   // Uses getBoundingClientRect on scroll — reliable regardless of threshold quirks.
   useEffect(() => {
-    if (newDropsOnly) return;
+    if (newDropsOnly || !showSearch) return;
     const NAV_H = 72;
     function check() {
       const el = searchRef.current;
@@ -211,6 +318,9 @@ export default function Collection({
     return () => ctx.revert();
   }, []);
 
+  // Reset to page 1 whenever filters or search change
+  useEffect(() => { setPage(1); }, [activeFilter, query]);
+
   function handleFilter(brand: BrandFilter) {
     if (brand !== "TODOS" && activeFilter === brand) {
       setActiveFilter("TODOS");
@@ -250,7 +360,7 @@ export default function Collection({
       style={{ background: sectionBg, padding: `${dark ? "clamp(4rem, 8vw, 7rem)" : "1.75rem"} clamp(1.5rem, 5vw, 5rem) clamp(2rem, 4vw, 3rem)` }}
     >
       {/* ── Search bar (collection page only) ───────────────────────── */}
-      {!dark && (
+      {showSearch && !dark && (
         <div
           ref={searchRef}
           style={{ marginBottom: "2.5rem", maxWidth: 480 }}
@@ -431,49 +541,128 @@ export default function Collection({
       </div>
 
       {/* ── Product grid ─────────────────────────────────────────────── */}
-      <div
-        className="grid gap-3"
-        style={{ gridTemplateColumns: "repeat(3, 1fr)" }}
-      >
-        {filtered.map((product, index) => (
-          <ProductCard key={product.id} product={product} index={index} dark={dark} />
-        ))}
-      </div>
+      {(() => {
+        const totalPages  = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
+        const safePage    = Math.min(page, totalPages);
+        const pageItems   = filtered.slice((safePage - 1) * ITEMS_PER_PAGE, safePage * ITEMS_PER_PAGE);
 
-      {/* Empty state */}
-      {filtered.length === 0 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="flex flex-col items-center justify-center py-24"
-        >
-          <span style={{ fontSize: 48, marginBottom: 16, opacity: 0.3 }}>👟</span>
-          <p className="font-body" style={{ fontSize: 14, color: emptyColor, letterSpacing: "0.08em" }}>
-            No hay productos disponibles en esta categoría
-          </p>
-        </motion.div>
-      )}
+        return (
+          <>
+            <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
+              {pageItems.map((product, index) => (
+                <ProductCard key={product.id} product={product} index={index} dark={dark} />
+              ))}
+            </div>
 
-      {/* ── Ver todos ────────────────────────────────────────────────────── */}
-      <div className="flex justify-center" style={{ marginTop: "3rem" }}>
-        <motion.button
-          className="font-body font-medium uppercase"
-          style={{
-            fontSize:      11,
-            letterSpacing: "0.16em",
-            color:         btnColor,
-            background:    "transparent",
-            border:        `1px solid ${btnBorder}`,
-            padding:       "14px 48px",
-            cursor:        "pointer",
-          }}
-          whileHover={btnHover}
-          whileTap={{ scale: 0.98 }}
-          transition={{ duration: 0.18, ease: "easeOut" }}
-        >
-          Ver todos
-        </motion.button>
-      </div>
+            {/* Empty state */}
+            {filtered.length === 0 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex flex-col items-center justify-center py-24"
+              >
+                <span style={{ fontSize: 48, marginBottom: 16, opacity: 0.3 }}>👟</span>
+                <p className="font-body" style={{ fontSize: 14, color: emptyColor, letterSpacing: "0.08em" }}>
+                  No hay productos disponibles en esta categoría
+                </p>
+              </motion.div>
+            )}
+
+            {/* ── Pagination ───────────────────────────────────────────── */}
+            {totalPages > 1 && (
+              <div
+                className="flex items-center justify-center"
+                style={{ marginTop: "3rem", gap: 4 }}
+              >
+                {/* Prev */}
+                <motion.button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={safePage === 1}
+                  className="font-body font-medium"
+                  style={{
+                    width:       36,
+                    height:      36,
+                    display:     "flex",
+                    alignItems:  "center",
+                    justifyContent: "center",
+                    background:  "transparent",
+                    border:      `1px solid ${safePage === 1 ? "transparent" : btnBorder}`,
+                    color:       safePage === 1 ? "transparent" : btnColor,
+                    cursor:      safePage === 1 ? "default" : "pointer",
+                    fontSize:    14,
+                    transition:  "border-color 150ms ease, color 150ms ease",
+                  }}
+                  whileHover={safePage === 1 ? {} : btnHover}
+                  whileTap={safePage === 1 ? {} : { scale: 0.96 }}
+                  transition={{ duration: 0.15 }}
+                  aria-label="Página anterior"
+                >
+                  ←
+                </motion.button>
+
+                {/* Page numbers */}
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => {
+                  const isActive = n === safePage;
+                  return (
+                    <motion.button
+                      key={n}
+                      onClick={() => setPage(n)}
+                      className="font-body font-medium"
+                      style={{
+                        width:        36,
+                        height:       36,
+                        display:      "flex",
+                        alignItems:   "center",
+                        justifyContent: "center",
+                        fontSize:     12,
+                        letterSpacing: "0.06em",
+                        background:   isActive ? (dark ? "#F0EDE8" : "#0A0A0A") : "transparent",
+                        color:        isActive ? (dark ? "#0A0A0A" : "#F0EDE8") : btnColor,
+                        border:       `1px solid ${isActive ? (dark ? "#F0EDE8" : "#0A0A0A") : btnBorder}`,
+                        cursor:       "pointer",
+                        transition:   "background 150ms ease, color 150ms ease, border-color 150ms ease",
+                      }}
+                      whileHover={isActive ? {} : btnHover}
+                      whileTap={{ scale: 0.96 }}
+                      transition={{ duration: 0.15 }}
+                      aria-label={`Página ${n}`}
+                      aria-current={isActive ? "page" : undefined}
+                    >
+                      {n}
+                    </motion.button>
+                  );
+                })}
+
+                {/* Next */}
+                <motion.button
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={safePage === totalPages}
+                  className="font-body font-medium"
+                  style={{
+                    width:       36,
+                    height:      36,
+                    display:     "flex",
+                    alignItems:  "center",
+                    justifyContent: "center",
+                    background:  "transparent",
+                    border:      `1px solid ${safePage === totalPages ? "transparent" : btnBorder}`,
+                    color:       safePage === totalPages ? "transparent" : btnColor,
+                    cursor:      safePage === totalPages ? "default" : "pointer",
+                    fontSize:    14,
+                    transition:  "border-color 150ms ease, color 150ms ease",
+                  }}
+                  whileHover={safePage === totalPages ? {} : btnHover}
+                  whileTap={safePage === totalPages ? {} : { scale: 0.96 }}
+                  transition={{ duration: 0.15 }}
+                  aria-label="Página siguiente"
+                >
+                  →
+                </motion.button>
+              </div>
+            )}
+          </>
+        );
+      })()}
     </section>
   );
 }

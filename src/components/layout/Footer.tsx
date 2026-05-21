@@ -115,8 +115,12 @@ export default function Footer() {
   }, []);
 
   const scrollToStores = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    document.getElementById("sucursales")?.scrollIntoView({ behavior: "smooth" });
+    const el = document.getElementById("sucursales");
+    if (el) {
+      e.preventDefault();
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+    // else: let the href="/#sucursales" handle navigation naturally
   };
 
   return (
@@ -192,7 +196,7 @@ export default function Footer() {
               <span key={mall} style={{ display: "flex", alignItems: "center", gap: "0.55rem" }}>
                 {i > 0 && <Dot />}
                 <a
-                  href="#sucursales"
+                  href="/#sucursales"
                   className="font-body"
                   onClick={scrollToStores}
                   style={{

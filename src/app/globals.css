@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Auth layout helpers ─────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .hidden-mobile { display: none !important; }
+}
+
 /* ─── SNEAX Design Tokens ────────────────────────────────────────────────── */
 :root {
   /* Surfaces */
@@ -98,6 +103,11 @@
 .nav-collection-search::-webkit-search-cancel-button { display: none; }
 
 /* ─── Component keyframes ────────────────────────────────────────────────── */
+
+/* Login — submit button spinner */
+@keyframes sneax-spin {
+  to { transform: rotate(360deg); }
+}
 
 /* FeaturedDrop — floating sneaker + shadow pulse */
 @keyframes fd-float {

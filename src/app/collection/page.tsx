@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { CartProvider } from "@/context/CartContext";
 import { CollectionSearchProvider } from "@/context/CollectionSearchContext";
 import Nav from "@/components/layout/Nav";
 import Footer from "@/components/layout/Footer";
@@ -22,13 +21,11 @@ export default function CollectionPage({
 
   return (
     <CollectionSearchProvider>
-      <CartProvider>
-        <Nav />
-        <main data-nav-theme="light" style={{ paddingTop: 72 }}>
-          <Collection initialBrand={brand} />
-        </main>
-        <Footer />
-      </CartProvider>
+      <Nav />
+      <main data-nav-theme="light" style={{ paddingTop: 72 }}>
+        <Collection initialBrand={brand} showSearch />
+      </main>
+      <Footer />
     </CollectionSearchProvider>
   );
 }

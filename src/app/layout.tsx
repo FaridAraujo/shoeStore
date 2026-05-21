@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Bebas_Neue, DM_Sans } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/context/AuthContext";
+import { CartProvider } from "@/context/CartContext";
 
 const bebasNeue = Bebas_Neue({
   weight: "400",
@@ -48,7 +50,9 @@ export default function RootLayout({
       className={`notranslate ${bebasNeue.variable} ${dmSans.variable}`}
     >
       <body className="font-body antialiased bg-[var(--bg)] text-[var(--text-primary)]">
-        {children}
+        <AuthProvider>
+          <CartProvider>{children}</CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

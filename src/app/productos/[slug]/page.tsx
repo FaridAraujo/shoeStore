@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { CartProvider } from "@/context/CartContext";
 import Nav from "@/components/layout/Nav";
 import ProductDetail from "@/components/sections/ProductDetail";
 import { getProductBySlug } from "@/lib/products";
@@ -11,8 +10,7 @@ import { getProductBySlug } from "@/lib/products";
   back to the first product — ASICS Gel-1130 — if the slug is unknown),
   and the product object is passed straight into ProductDetail.
 
-  CartProvider wraps the page so Nav (cart badge) and ProductDetail
-  ("Agregar al carrito") both work standalone.
+  CartProvider lives in the root layout — no need to repeat it here.
 */
 
 export function generateMetadata({
@@ -35,9 +33,9 @@ export default function ProductPage({
   const product = getProductBySlug(params.slug);
 
   return (
-    <CartProvider>
+    <>
       <Nav />
       <ProductDetail product={product} />
-    </CartProvider>
+    </>
   );
 }

@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/context/CartContext";
 import { formatPrice } from "@/lib/products";
@@ -23,6 +24,7 @@ const DRAWER_SPRING = {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function CartSidebar() {
+  const router = useRouter();
   const {
     isOpen, closeCart,
     items, totalItems, totalPrice,
@@ -441,6 +443,7 @@ export default function CartSidebar() {
 
                 {/* CTA button */}
                 <button
+                  onClick={() => { closeCart(); router.push("/login?next=/checkout/confirmation"); }}
                   className="font-body font-medium uppercase"
                   style={{
                     width:         "100%",

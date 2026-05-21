@@ -137,6 +137,142 @@ function RelatedCard({ product }: { product: Product }) {
   );
 }
 
+// ─── Size Guide Modal ─────────────────────────────────────────────────────────
+
+const SIZE_ROWS: { eu: number; usM: string; usW: string; cm: string }[] = [
+  { eu: 36, usM: "4",    usW: "5.5",  cm: "22.5" },
+  { eu: 37, usM: "4.5",  usW: "6",    cm: "23"   },
+  { eu: 38, usM: "5.5",  usW: "7",    cm: "24"   },
+  { eu: 39, usM: "6.5",  usW: "8",    cm: "24.5" },
+  { eu: 40, usM: "7",    usW: "8.5",  cm: "25"   },
+  { eu: 41, usM: "8",    usW: "9.5",  cm: "25.5" },
+  { eu: 42, usM: "8.5",  usW: "10",   cm: "26.5" },
+  { eu: 43, usM: "9.5",  usW: "11",   cm: "27"   },
+  { eu: 44, usM: "10",   usW: "11.5", cm: "28"   },
+  { eu: 45, usM: "11",   usW: "12.5", cm: "29"   },
+];
+
+function SizeGuideModal({ onClose }: { onClose: () => void }) {
+  // Close on backdrop click
+  function handleBackdrop(e: React.MouseEvent) {
+    if (e.target === e.currentTarget) onClose();
+  }
+
+  // Close on Escape
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) { if (e.key === "Escape") onClose(); }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  const thStyle: React.CSSProperties = {
+    padding:       "10px 16px",
+    textAlign:     "left",
+    fontSize:      10,
+    letterSpacing: "0.22em",
+    color:         "#B8B4AC",
+    fontWeight:    500,
+    borderBottom:  "1px solid rgba(10,10,10,0.08)",
+    whiteSpace:    "nowrap",
+  };
+
+  const tdStyle: React.CSSProperties = {
+    padding:  "10px 16px",
+    fontSize: 13,
+    color:    "#0A0A0A",
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      onClick={handleBackdrop}
+      style={{
+        position:       "fixed",
+        inset:          0,
+        zIndex:         100,
+        background:     "rgba(10,10,10,0.45)",
+        display:        "flex",
+        alignItems:     "center",
+        justifyContent: "center",
+        padding:        "1.5rem",
+        backdropFilter: "blur(4px)",
+      }}
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 20, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0,  scale: 1    }}
+        exit={{    opacity: 0, y: 12, scale: 0.98  }}
+        transition={{ duration: 0.28, ease: [0.23, 1, 0.32, 1] }}
+        style={{
+          background:   "#FFFFFF",
+          borderRadius: 4,
+          width:        "100%",
+          maxWidth:     480,
+          overflow:     "hidden",
+          boxShadow:    "0 24px 64px rgba(0,0,0,0.2)",
+        }}
+      >
+        {/* Header */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 24px", borderBottom: "1px solid rgba(10,10,10,0.08)" }}>
+          <div>
+            <h2 className="font-display" style={{ fontSize: 28, letterSpacing: "0.04em", color: "#0A0A0A", lineHeight: 1 }}>
+              GUÍA DE TALLAS
+            </h2>
+            <p className="font-body" style={{ fontSize: 11, color: "#B8B4AC", marginTop: 4, letterSpacing: "0.04em" }}>
+              Medidas en centímetros del pie
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: "#B8B4AC", padding: 4, lineHeight: 1 }}
+            aria-label="Cerrar guía de tallas"
+          >
+            ×
+          </button>
+        </div>
+
+        {/* Table */}
+        <div style={{ overflowY: "auto", maxHeight: "60vh" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead style={{ position: "sticky", top: 0, background: "#FAFAF9" }}>
+              <tr>
+                <th className="font-body" style={thStyle}>EU</th>
+                <th className="font-body" style={thStyle}>US Hombre</th>
+                <th className="font-body" style={thStyle}>US Mujer</th>
+                <th className="font-body" style={thStyle}>CM</th>
+              </tr>
+            </thead>
+            <tbody>
+              {SIZE_ROWS.map((row, i) => (
+                <tr
+                  key={row.eu}
+                  style={{ background: i % 2 === 0 ? "#FFFFFF" : "#F7F6F4" }}
+                >
+                  <td className="font-body font-medium" style={{ ...tdStyle, color: "#0A0A0A" }}>{row.eu}</td>
+                  <td className="font-body" style={tdStyle}>{row.usM}</td>
+                  <td className="font-body" style={tdStyle}>{row.usW}</td>
+                  <td className="font-body" style={tdStyle}>{row.cm}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Footer note */}
+        <div style={{ padding: "14px 24px", borderTop: "1px solid rgba(10,10,10,0.06)", background: "#FAFAF9" }}>
+          <p className="font-body" style={{ fontSize: 11, color: "#B8B4AC", letterSpacing: "0.03em", lineHeight: 1.6 }}>
+            Si estás entre dos tallas, te recomendamos ir a la talla mayor.<br />
+            Las medidas son aproximadas y pueden variar según el modelo.
+          </p>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 // ─── ProductDetail ────────────────────────────────────────────────────────────
 
 export default function ProductDetail({ product }: { product: Product }) {
@@ -146,6 +282,7 @@ export default function ProductDetail({ product }: { product: Product }) {
   const [selectedEU,    setSelectedEU]    = useState<number | null>(null);
   const [sizeUnit,      setSizeUnit]      = useState<SizeUnit>("EU");
   const [noSizeWarning, setNoSizeWarning] = useState(false);
+  const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
 
   const sectionRef = useRef<HTMLElement>(null);
   const leftRef    = useRef<HTMLDivElement>(null);
@@ -440,6 +577,7 @@ export default function ProductDetail({ product }: { product: Product }) {
 
               {/* Guía de tallas */}
               <motion.button
+                onClick={() => setSizeGuideOpen(true)}
                 className="font-body text-left"
                 style={{ fontSize: 11, letterSpacing: "0.06em", color: "#B8B4AC", background: "none", border: "none", cursor: "pointer", padding: 0, marginBottom: "1.75rem", textDecoration: "underline", textUnderlineOffset: 3 }}
                 whileHover={{ color: "#5A5850" }}
@@ -447,6 +585,11 @@ export default function ProductDetail({ product }: { product: Product }) {
               >
                 Guía de tallas
               </motion.button>
+
+              {/* Size guide modal */}
+              <AnimatePresence>
+                {sizeGuideOpen && <SizeGuideModal onClose={() => setSizeGuideOpen(false)} />}
+              </AnimatePresence>
 
               {/* ── Color ───────────────────────────────────────────────────── */}
               <p
