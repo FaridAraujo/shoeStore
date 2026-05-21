@@ -1,0 +1,149 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── SNEAX Design Tokens ────────────────────────────────────────────────── */
+:root {
+  /* Surfaces */
+  --color-concrete: #E8E6E1;
+  --color-surface: #D4D0C8;
+  --color-border: #B8B4AC;
+
+  /* Text */
+  --color-ink: #0A0A0A;
+  --color-ink-muted: #5A5850;
+
+  /* Accent */
+  --color-accent: #F2BF1A;
+
+  /* Semantic aliases — light mode */
+  --bg: var(--color-concrete);
+  --bg-surface: var(--color-surface);
+  --bg-border: var(--color-border);
+  --text-primary: var(--color-ink);
+  --text-muted: var(--color-ink-muted);
+}
+
+
+/* ─── Base Typography ─────────────────────────────────────────────────────── */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    background-color: var(--bg);
+    color: var(--text-primary);
+  }
+
+  body {
+    font-family: var(--font-dm-sans), "DM Sans", sans-serif;
+    font-size: 1rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--bg);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-bebas-neue), "Bebas Neue", sans-serif;
+    font-weight: 400; /* Bebas Neue is inherently bold — weight 400 is the display weight */
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    color: var(--text-primary);
+  }
+
+  /* Editorial scale */
+  h1 { font-size: clamp(4rem, 12vw, 10rem); }
+  h2 { font-size: clamp(2.5rem, 6vw, 6rem); }
+  h3 { font-size: clamp(1.75rem, 4vw, 3.5rem); }
+  h4 { font-size: clamp(1.25rem, 2.5vw, 2rem); }
+
+  p {
+    font-family: var(--font-dm-sans), "DM Sans", sans-serif;
+    font-size: clamp(0.875rem, 1.5vw, 1rem);
+  }
+
+  /* Selection accent */
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-ink);
+  }
+}
+
+/* ─── Nav hover states ───────────────────────────────────────────────────── */
+/*
+  Nav links/buttons use inline style for color (needed for isDark crossfade).
+  Hover is handled via CSS custom property --nav-hover set on the <nav> element
+  from JS, so :hover can read it without React re-renders on every mousemove.
+*/
+.nav-item {
+  transition: color 180ms ease, opacity 180ms ease;
+}
+.nav-item:hover {
+  color: var(--nav-hover) !important;
+}
+.nav-search-btn {
+  transition: color 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+.nav-search-btn:hover {
+  color: var(--nav-hover) !important;
+  border-color: var(--nav-hover) !important;
+  background: var(--nav-search-hover-bg) !important;
+}
+
+/* ─── Collection search inputs ──────────────────────────────────────────── */
+.collection-search-input::placeholder { color: #8A8680; }
+.collection-search-input::-webkit-search-cancel-button { display: none; }
+.nav-collection-search::placeholder { color: rgba(184,180,172,0.7); }
+.nav-collection-search::-webkit-search-cancel-button { display: none; }
+
+/* ─── Component keyframes ────────────────────────────────────────────────── */
+
+/* FeaturedDrop — floating sneaker + shadow pulse */
+@keyframes fd-float {
+  from { transform: translateY(0px);   }
+  to   { transform: translateY(-14px); }
+}
+@keyframes fd-shadow {
+  from { transform: scaleX(1);    opacity: 1;    }
+  to   { transform: scaleX(0.75); opacity: 0.55; }
+}
+
+/*
+  ProductDetail — combined float + drop-shadow.
+  The shadow Y offset grows as translateY goes negative so it
+  stays anchored to the same "ground" plane:
+    rest: translateY(0px)   + drop-shadow(0 14px) → shadow at +14px
+    peak: translateY(-16px) + drop-shadow(0 30px) → shadow at +14px ✓
+*/
+@keyframes pd-float-shadow {
+  from { transform: translateY(0px);   filter: drop-shadow(0 14px 10px rgba(0,0,0,0.30)); }
+  to   { transform: translateY(-16px); filter: drop-shadow(0 30px  5px rgba(0,0,0,0.11)); }
+}
+
+/* ─── Scroll & Motion ─────────────────────────────────────────────────────── */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* GSAP will handle scroll animations; this ensures no flash of unstyled content */
+  .gsap-init-hidden {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  /* Concrete texture overlay utility */
+  .texture-concrete {
+    position: relative;
+  }
+
+  .texture-concrete::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    opacity: 0.4;
+  }
+}
