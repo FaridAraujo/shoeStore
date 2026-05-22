@@ -243,7 +243,7 @@ export default function Act1LaX() {
       }
     });
 
-    // ── Desktop — scrub atado al scroll ───────────────────────────────────────
+    // ── Desktop — scrub + snap igual que mobile ───────────────────────────────
     mm.add("(min-width: 769px)", () => {
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -251,6 +251,12 @@ export default function Act1LaX() {
           start:   "top top",
           end:     "bottom bottom",
           scrub:   0.5,
+          snap: {
+            snapTo:   (progress: number) => progress > 0.15 ? 1 : 0,
+            duration: { min: 2.5, max: 4.0 },
+            delay:    0.15,
+            ease:     "power2.inOut",
+          },
           onUpdate(self) {
             progressRef.current = self.progress;
           },
@@ -317,28 +323,6 @@ export default function Act1LaX() {
             zIndex:           1,
           }}
         />
-        {/* Etiqueta editorial — esquina superior izquierda */}
-        <div
-          className="flex items-center font-body"
-          style={{
-            position:      "absolute",
-            top:           22,
-            left:          20,
-            gap:           8,
-            zIndex:        3,
-            pointerEvents: "none",
-          }}
-        >
-          <span style={{ width: 16, height: 1, background: "#F2BF1A" }} />
-          <span style={{
-            fontSize:      9,
-            letterSpacing: "0.26em",
-            textTransform: "uppercase",
-            color:         "rgba(240,237,232,0.42)",
-          }}>
-            Acto 01 — La X
-          </span>
-        </div>
         {/* Contador — esquina inferior derecha */}
         <span
           className="font-body"
