@@ -55,7 +55,7 @@ export default function Act2Espacio() {
       }, 0.52);
     });
 
-    // ── Desktop — scrub atado al scroll ────────────────────────────────────
+    // ── Desktop — scrub + snap (igual que mobile) ──────────────────────────
     mm.add("(min-width: 769px)", () => {
       gsap.set(wordsRef.current, { opacity: 0, y: 36 });
       gsap.set(subtextRef.current, { opacity: 0, y: 16 });
@@ -66,6 +66,12 @@ export default function Act2Espacio() {
           start:   "top top",
           end:     "bottom bottom",
           scrub:   0.5,
+          snap: {
+            snapTo:   (progress: number) => progress > 0.15 ? 1 : 0,
+            duration: { min: 2.0, max: 3.5 },
+            delay:    0.15,
+            ease:     "power2.inOut",
+          },
         },
       });
 
