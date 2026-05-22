@@ -78,9 +78,9 @@ body {
 
 
   /* ── About — track heights en mobile ───────────────────────────────── */
-  /* act1: 200dvh → 100dvh de pin, animación lenta y controlable con scrub */
+  /* act1/act2: 200dvh → 100dvh de pin para scrub controlable */
   .act1-track { height: 200dvh !important; }
-  .act2-track { height: 120dvh !important; }
+  .act2-track { height: 200dvh !important; }
 
   /* ── Sucursales — reduce padding de items para igualar alto de la foto ── */
   [data-location-item] { padding-top: 7px !important; padding-bottom: 7px !important; }

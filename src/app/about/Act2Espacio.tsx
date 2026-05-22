@@ -23,34 +23,36 @@ export default function Act2Espacio() {
 
     const mm = gsap.matchMedia();
 
-    // ── Mobile — el scroll dispara la animación, que se completa sola ───────
+    // ── Mobile — scrub + snap: igual que Act1. Las palabras aparecen en el
+    //    primer 40% del scroll → incluso un scroll rápido las muestra completas.
     mm.add("(max-width: 768px)", () => {
       gsap.set(wordsRef.current, { opacity: 0, y: 36 });
       gsap.set(subtextRef.current, { opacity: 0, y: 16 });
 
-      const tl = gsap.timeline({ paused: true });
-      tl.to(wordsRef.current, {
-        opacity: 1, y: 0,
-        stagger: 0.09, duration: 0.55, ease: "power3.out",
-      }, 0);
-      tl.to(subtextRef.current, {
-        opacity: 1, y: 0, duration: 0.55, ease: "power2.out",
-      }, 0.75);
-
-      let launched = false;
-      const st = ScrollTrigger.create({
-        trigger: trackRef.current,
-        start:   "top top",
-        end:     "bottom bottom",
-        onUpdate(self) {
-          if (!launched && self.progress > 0.015) {
-            launched = true;
-            tl.play();
-          }
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: trackRef.current,
+          start:   "top top",
+          end:     "bottom bottom",
+          scrub:   0.5,
+          snap: {
+            snapTo:   (progress: number) => progress > 0.15 ? 1 : 0,
+            duration: { min: 2.0, max: 3.5 },
+            delay:    0.15,
+            ease:     "power2.inOut",
+          },
         },
       });
 
-      return () => { st.kill(); tl.kill(); };
+      // Palabras: aparecen entre 0 y ~0.40 de progreso (rápido, no se pierden)
+      tl.to(wordsRef.current, {
+        opacity: 1, y: 0,
+        stagger: 0.045, ease: "power3.out", duration: 0.045,
+      }, 0);
+      // Subtexto: aparece entre ~0.50 y 0.70
+      tl.to(subtextRef.current, {
+        opacity: 1, y: 0, ease: "power2.out", duration: 0.18,
+      }, 0.52);
     });
 
     // ── Desktop — scrub atado al scroll ────────────────────────────────────

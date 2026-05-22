@@ -379,12 +379,12 @@ export default function Act5CostaRica() {
       <div className="flex flex-col md:grid md:grid-cols-2" style={{ gap: "clamp(2rem, 4vw, 4rem)", alignItems: "center" }}>
 
         {/* Left — map (lights up active store) */}
-        <div data-act5-map style={{ display: "flex", justifyContent: "center" }}>
+        <div data-act5-map style={{ display: "flex", justifyContent: "center", width: "100%" }}>
           <StoreMap activeId={activeId} />
         </div>
 
         {/* Right — store detail panel */}
-        <div data-act5-panel>
+        <div data-act5-panel style={{ width: "100%" }}>
           <StorePanel location={active} />
         </div>
       </div>
