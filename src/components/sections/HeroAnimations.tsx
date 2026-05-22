@@ -54,7 +54,7 @@ export default function HeroAnimations() {
         // is also lightening, so no dark line is ever exposed.
         const bottomGrad  = document.querySelector<HTMLElement>("[data-hero-bottom-grad]");
         const bottomSolid = document.querySelector<HTMLElement>("[data-hero-bottom-solid]");
-        const seamFix     = document.querySelector<HTMLElement>("[data-hero-seam-fix]");
+        const _seamFix    = document.querySelector<HTMLElement>("[data-hero-seam-fix]");
 
         if (isMobile) {
           // Mobile: aclara mientras el hero sale de pantalla.

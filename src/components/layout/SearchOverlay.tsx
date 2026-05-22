@@ -363,7 +363,7 @@ export default function SearchOverlay({
                         className="font-body uppercase tracking-[0.22em]"
                         style={{ fontSize: 9, color: "rgba(255,255,255,0.2)", marginBottom: "1.25rem" }}
                       >
-                        {results.length} resultado{results.length !== 1 ? "s" : ""} para "{query}"
+                        {results.length} resultado{results.length !== 1 ? "s" : ""} para &ldquo;{query}&rdquo;
                       </p>
 
                       {/* Grid */}
@@ -403,7 +403,7 @@ export default function SearchOverlay({
                         className="font-display uppercase"
                         style={{ fontSize: 24, color: "rgba(255,255,255,0.18)", letterSpacing: "0.04em", marginBottom: 8 }}
                       >
-                        Sin resultados para "{query}"
+                        Sin resultados para &ldquo;{query}&rdquo;
                       </p>
                       <p
                         className="font-body"

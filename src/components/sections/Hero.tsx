@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import HeroVideo from "./HeroVideo";
 import HeroAnimations from "./HeroAnimations";
@@ -38,7 +38,7 @@ const WORD_STYLES: Record<HeadlineWord, CSSProperties> = {
   directly as magnetic units instead of splitting textContent (which would
   destroy the img element).
 */
-function ProximoContent({ style }: { style: CSSProperties }) {
+function ProximoContent({ style: _style }: { style: CSSProperties }) {
   const charStyle: CSSProperties = { display: "inline-block" };
   return (
     <>
