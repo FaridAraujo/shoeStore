@@ -138,6 +138,27 @@ function ProductCard({ product, index, dark }: { product: Product; index: number
           className="absolute inset-0 flex items-center justify-center p-6"
           style={{ overflow: "hidden", borderRadius: "3px 3px 0 0" }}
         >
+          {/* Discount badge — top-left corner of the image area */}
+          {product.originalPrice && (
+            <div
+              className="font-body font-bold"
+              style={{
+                position:      "absolute",
+                top:           10,
+                left:          10,
+                zIndex:        10,
+                background:    "#F2BF1A",
+                color:         "#0A0A0A",
+                fontSize:      10,
+                letterSpacing: "0.12em",
+                padding:       "3px 7px",
+                borderRadius:  2,
+              }}
+            >
+              -{Math.round((1 - product.price / product.originalPrice) * 100)}%
+            </div>
+          )}
+
           {imgError ? (
             <div
               className="w-full h-full flex items-center justify-center"
@@ -222,9 +243,19 @@ function ProductCard({ product, index, dark }: { product: Product; index: number
         </span>
 
         <div className="flex items-center justify-between" style={{ position: "relative" }}>
-          <span className="font-body font-medium" style={{ fontSize: 14, color: dark ? "#F0EDE8" : "#0A0A0A" }}>
-            {formatPrice(product.price)}
-          </span>
+          <div className="flex flex-col" style={{ gap: 1 }}>
+            {product.originalPrice && (
+              <span
+                className="font-body"
+                style={{ fontSize: 11, color: dark ? "rgba(240,237,232,0.35)" : "#B8B4AC", textDecoration: "line-through", letterSpacing: "0.02em" }}
+              >
+                {formatPrice(product.originalPrice)}
+              </span>
+            )}
+            <span className="font-body font-medium" style={{ fontSize: 14, color: product.originalPrice ? "#C08A00" : (dark ? "#F0EDE8" : "#0A0A0A") }}>
+              {formatPrice(product.price)}
+            </span>
+          </div>
 
           <div style={{ position: "relative" }}>
             <AnimatePresence>

@@ -52,7 +52,8 @@ export const PRODUCTS: Product[] = [
     brand: Brand.ASICS,
     name: "Gel-1130",
     colorway: "White Pure Silver",
-    price: 89900,
+    price: 71900,
+    originalPrice: 89900,
     image: "/images/products/asicsFeatured.png",
     description:
       "La silueta que define el momento. La Gel-1130 lleva la amortiguación GEL de ASICS a un diseño lifestyle que domina calles y feeds por igual.",

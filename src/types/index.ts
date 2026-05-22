@@ -32,6 +32,8 @@ export interface Product {
   colorway?: string;
   /** Price in Costa Rican Colón (CRC) */
   price: number;
+  /** Original price before discount — present only when the product is on sale */
+  originalPrice?: number;
   /** Hero image path relative to /public */
   image: string;
   /** Short Spanish marketing description shown on the product page */

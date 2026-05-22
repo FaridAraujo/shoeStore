@@ -119,9 +119,16 @@ function RelatedCard({ product }: { product: Product }) {
             {product.name}
           </span>
           <div className="flex items-center justify-between">
-            <span className="font-body font-medium" style={{ fontSize: 13, color: "#0A0A0A" }}>
-              {formatPrice(product.price)}
-            </span>
+            <div className="flex flex-col" style={{ gap: 1 }}>
+              {product.originalPrice && (
+                <span className="font-body" style={{ fontSize: 10, color: "#B8B4AC", textDecoration: "line-through" }}>
+                  {formatPrice(product.originalPrice)}
+                </span>
+              )}
+              <span className="font-body font-medium" style={{ fontSize: 13, color: product.originalPrice ? "#C08A00" : "#0A0A0A" }}>
+                {formatPrice(product.price)}
+              </span>
+            </div>
             <motion.span
               animate={{ color: hovered ? "#F2BF1A" : "#B8B4AC", x: hovered ? 3 : 0 }}
               transition={{ duration: 0.16, ease: "easeOut" }}
@@ -501,12 +508,37 @@ export default function ProductDetail({ product }: { product: Product }) {
               transition={{ duration: 0.45, ease: [0.23, 1, 0.32, 1], delay: 0.08 }}
             >
               {/* Price */}
-              <p
-                className="font-display"
-                style={{ fontSize: "clamp(2.5rem, 3.5vw, 3.25rem)", lineHeight: 0.95, letterSpacing: "0.02em", color: "#0A0A0A", marginBottom: "1.75rem" }}
-              >
-                {formatPrice(product.price)}
-              </p>
+              <div style={{ marginBottom: "1.75rem" }}>
+                {product.originalPrice && (
+                  <div className="flex items-center gap-2" style={{ marginBottom: "0.3rem" }}>
+                    <span
+                      className="font-body font-medium"
+                      style={{ fontSize: "clamp(0.9rem, 1.2vw, 1rem)", color: "#B8B4AC", textDecoration: "line-through" }}
+                    >
+                      {formatPrice(product.originalPrice)}
+                    </span>
+                    <span
+                      className="font-body font-bold"
+                      style={{
+                        fontSize:      10,
+                        letterSpacing: "0.12em",
+                        background:    "#F2BF1A",
+                        color:         "#0A0A0A",
+                        padding:       "2px 7px",
+                        borderRadius:  2,
+                      }}
+                    >
+                      -{Math.round((1 - product.price / product.originalPrice) * 100)}%
+                    </span>
+                  </div>
+                )}
+                <p
+                  className="font-display"
+                  style={{ fontSize: "clamp(2.5rem, 3.5vw, 3.25rem)", lineHeight: 0.95, letterSpacing: "0.02em", color: product.originalPrice ? "#C08A00" : "#0A0A0A" }}
+                >
+                  {formatPrice(product.price)}
+                </p>
+              </div>
 
               {/* ── Size selector ───────────────────────────────────────────── */}
               <div className="flex items-center justify-between" style={{ marginBottom: "0.75rem" }}>

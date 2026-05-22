@@ -13,7 +13,8 @@ const PRODUCTS = [
     dropLabel: "DROP 001",
     brand: "ASICS",
     name: "Gel-1130",
-    price: "₡89,900",
+    price: "₡71,900",
+    originalPrice: "₡89,900",
     shipping: "Envío gratis a todo el país",
     description: "La silueta que define el momento. La Gel-1130 en White Pure Silver lleva la amortiguación GEL de ASICS a un diseño lifestyle que domina calles y feeds por igual.",
     tags: ["Lifestyle", "Amortiguación", "Unisex"],
@@ -194,6 +195,30 @@ export default function FeaturedDrop() {
             </button>
           </div>
 
+          {/* Discount badge — top-right corner, only when product has originalPrice */}
+          {"originalPrice" in active && active.originalPrice && (
+            <motion.span
+              key={active.id + "-badge"}
+              initial={{ opacity: 0, scale: 0.85 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
+              className="absolute font-body font-bold"
+              style={{
+                top:           "1.5rem",
+                right:         "1.5rem",
+                zIndex:        20,
+                background:    "#F2BF1A",
+                color:         "#0A0A0A",
+                fontSize:      11,
+                letterSpacing: "0.12em",
+                padding:       "4px 10px",
+                borderRadius:  2,
+              }}
+            >
+              -20%
+            </motion.span>
+          )}
+
           {/* Sneaker + shadow
               motion.div handles enter animation (key swap).
               Inner div runs the CSS float keyframe.
@@ -313,15 +338,38 @@ export default function FeaturedDrop() {
             initial={{ y: 16, opacity: 0 }}
             animate={{ y: 0,  opacity: 1 }}
             transition={{ ...INFO_TRANSITION, delay: 0.13 }}
-            className="flex items-baseline flex-wrap gap-4"
+            className="flex items-center flex-wrap gap-3"
             style={{ marginBottom: "2rem" }}
           >
+            {"originalPrice" in active && active.originalPrice && (
+              <span
+                className="font-body font-medium"
+                style={{ fontSize: "clamp(1rem, 1.6vw, 1.25rem)", color: "#B8B4AC", textDecoration: "line-through" }}
+              >
+                {active.originalPrice}
+              </span>
+            )}
             <span
               className="font-body font-bold"
-              style={{ fontSize: "clamp(1.6rem, 2.5vw, 2.1rem)", color: "#0A0A0A" }}
+              style={{ fontSize: "clamp(1.6rem, 2.5vw, 2.1rem)", color: "originalPrice" in active && active.originalPrice ? "#C08A00" : "#0A0A0A" }}
             >
               {active.price}
             </span>
+            {"originalPrice" in active && active.originalPrice && (
+              <span
+                className="font-body font-bold"
+                style={{
+                  fontSize:      10,
+                  letterSpacing: "0.12em",
+                  background:    "#F2BF1A",
+                  color:         "#0A0A0A",
+                  padding:       "3px 8px",
+                  borderRadius:  2,
+                }}
+              >
+                -20%
+              </span>
+            )}
           </motion.div>
 
           <div data-fd-text>
