@@ -9,6 +9,7 @@ const Act1LaX        = dynamic(() => import("./Act1LaX"),        {
   ssr: false,
   loading: () => (
     <div
+      className="act1-track"
       style={{
         height: "175dvh",
         background: "#0A0A0A",

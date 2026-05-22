@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { gsap } from "@/lib/gsap";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
 
 // Headline split into words with line groupings
 const LINES = [
@@ -23,23 +23,34 @@ export default function Act2Espacio() {
 
     const mm = gsap.matchMedia();
 
-    // ── Mobile — one-shot entry animation (no scrub, no incomplete frames) ──
+    // ── Mobile — el scroll dispara la animación, que se completa sola ───────
     mm.add("(max-width: 768px)", () => {
       gsap.set(wordsRef.current, { opacity: 0, y: 36 });
       gsap.set(subtextRef.current, { opacity: 0, y: 16 });
 
-      const trigger = { trigger: trackRef.current, start: "top 70%", once: true };
-
-      gsap.to(wordsRef.current, {
+      const tl = gsap.timeline({ paused: true });
+      tl.to(wordsRef.current, {
         opacity: 1, y: 0,
-        stagger: 0.07, duration: 0.55, ease: "power3.out",
-        scrollTrigger: trigger,
+        stagger: 0.09, duration: 0.55, ease: "power3.out",
+      }, 0);
+      tl.to(subtextRef.current, {
+        opacity: 1, y: 0, duration: 0.55, ease: "power2.out",
+      }, 0.75);
+
+      let launched = false;
+      const st = ScrollTrigger.create({
+        trigger: trackRef.current,
+        start:   "top top",
+        end:     "bottom bottom",
+        onUpdate(self) {
+          if (!launched && self.progress > 0.015) {
+            launched = true;
+            tl.play();
+          }
+        },
       });
-      gsap.to(subtextRef.current, {
-        opacity: 1, y: 0, duration: 0.5, ease: "power2.out",
-        delay: 0.65,
-        scrollTrigger: trigger,
-      });
+
+      return () => { st.kill(); tl.kill(); };
     });
 
     // ── Desktop — scrub atado al scroll ────────────────────────────────────

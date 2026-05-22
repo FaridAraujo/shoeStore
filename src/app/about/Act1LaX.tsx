@@ -1,11 +1,11 @@
 "use client";
 
 import { Suspense, useRef, useEffect, useMemo } from "react";
-import { Canvas, useLoader, useFrame } from "@react-three/fiber";
+import { Canvas, useLoader, useFrame, useThree } from "@react-three/fiber";
 import { Environment } from "@react-three/drei";
 import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
 import * as THREE from "three";
-import { gsap } from "@/lib/gsap";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
 
 // ─── Coordinate system ────────────────────────────────────────────────────────
 // All SVGs share viewBox "0 0 600 444" with transform translate(0,444) scale(0.1,-0.1)
@@ -155,8 +155,16 @@ function LogoScene({ progressRef }: { progressRef: { current: number } }) {
 
   const sharedMetal = { metalness: 0.95, roughness: 0.08, envMapIntensity: 1.6 };
 
+  // El logo SNEAX mide ~9 u de ancho; en mobile portrait no cabe en pantalla,
+  // así que se escala el grupo entero para que entre completo.
+  const { size } = useThree();
+  const groupScale =
+    size.width > 768
+      ? 1
+      : Math.min(1, Math.max(0.3, (0.82 * 8.45 * (size.width / size.height)) / 9));
+
   return (
-    <>
+    <group scale={groupScale}>
       <mesh ref={rS} geometry={gS}>
         <meshStandardMaterial ref={mS} color="#B8B4AC" transparent {...sharedMetal} />
       </mesh>
@@ -178,7 +186,7 @@ function LogoScene({ progressRef }: { progressRef: { current: number } }) {
           envMapIntensity={2.2}
         />
       </mesh>
-    </>
+    </group>
   );
 }
 
@@ -186,6 +194,7 @@ function LogoScene({ progressRef }: { progressRef: { current: number } }) {
 export default function Act1LaX() {
   const trackRef    = useRef<HTMLDivElement>(null);
   const textRef     = useRef<HTMLParagraphElement>(null);
+  const cueRef      = useRef<HTMLDivElement>(null);
   const progressRef = useRef(0);
 
   useEffect(() => {
@@ -193,27 +202,45 @@ export default function Act1LaX() {
 
     const mm = gsap.matchMedia();
 
-    // ── Mobile — auto-play animation, no scrub ────────────────────────────────
+    // ── Mobile — scrub suave + snap lento: el usuario controla la animación
+    //    con el scroll y al detenerse se autocompleta sin salto brusco.
+    //    La sección es sticky → el snap mueve el scroll "por detrás" mientras
+    //    la sección queda fija; el usuario solo ve la animación completarse.
     mm.add("(max-width: 768px)", () => {
-      const proxy    = { value: 0 };
-      const duration = 2.8;
-      const trigger  = { trigger: trackRef.current, start: "top 60%", once: true };
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: trackRef.current,
+          start:   "top top",
+          end:     "bottom bottom",
+          scrub:   0.5,
+          snap: {
+            snapTo:   (progress: number) => progress > 0.15 ? 1 : 0,
+            duration: { min: 2.5, max: 4.0 },
+            delay:    0.15,
+            ease:     "power2.inOut",
+          },
+          onUpdate(self) {
+            progressRef.current = self.progress;
+          },
+        },
+      });
 
-      const tl = gsap.timeline({ scrollTrigger: trigger });
-
-      tl.to(proxy, {
-        value: 1, duration, ease: "power2.inOut",
-        onUpdate() { progressRef.current = proxy.value; },
-      }, 0);
-
-      // Text fades in when the X is alone (~p 0.62) then out (~p 0.86)
+      // Texto aparece cuando la X queda sola — se mantiene visible (no desaparece)
       tl.fromTo(
         textRef.current,
         { opacity: 0, y: 18 },
-        { opacity: 1, y: 0, ease: "power2.out", duration: 0.45 },
-        0.62 * duration,
+        { opacity: 1, y: 0, ease: "power2.out", duration: 0.12 },
+        0.62,
       );
-      tl.to(textRef.current, { opacity: 0, ease: "power1.in", duration: 0.35 }, 0.86 * duration);
+      // Indicador de scroll aparece casi al finalizar la animación
+      if (cueRef.current) {
+        tl.fromTo(
+          cueRef.current,
+          { opacity: 0, y: 8 },
+          { opacity: 1, y: 0, ease: "power2.out", duration: 0.08 },
+          0.88,
+        );
+      }
     });
 
     // ── Desktop — scrub atado al scroll ───────────────────────────────────────
@@ -274,6 +301,95 @@ export default function Act1LaX() {
           </Suspense>
         </Canvas>
 
+        {/* ── Detalle ambiental ───────────────────────────────────────────── */}
+        {/* Textura de X repetida, muy sutil, sobre el fondo negro */}
+        <div
+          aria-hidden="true"
+          style={{
+            position:         "absolute",
+            inset:            0,
+            backgroundImage:  "url('/images/x-sneax.svg')",
+            backgroundRepeat: "repeat",
+            backgroundSize:   "clamp(70px, 17vw, 104px) clamp(70px, 17vw, 104px)",
+            opacity:          0.05,
+            filter:           "invert(1)",
+            pointerEvents:    "none",
+            zIndex:           1,
+          }}
+        />
+        {/* Etiqueta editorial — esquina superior izquierda */}
+        <div
+          className="flex items-center font-body"
+          style={{
+            position:      "absolute",
+            top:           22,
+            left:          20,
+            gap:           8,
+            zIndex:        3,
+            pointerEvents: "none",
+          }}
+        >
+          <span style={{ width: 16, height: 1, background: "#F2BF1A" }} />
+          <span style={{
+            fontSize:      9,
+            letterSpacing: "0.26em",
+            textTransform: "uppercase",
+            color:         "rgba(240,237,232,0.42)",
+          }}>
+            Acto 01 — La X
+          </span>
+        </div>
+        {/* Contador — esquina inferior derecha */}
+        <span
+          className="font-body"
+          style={{
+            position:      "absolute",
+            bottom:        24,
+            right:         20,
+            fontSize:      9,
+            letterSpacing: "0.22em",
+            color:         "rgba(240,237,232,0.3)",
+            zIndex:        3,
+            pointerEvents: "none",
+          }}
+        >
+          01 / 05
+        </span>
+        {/* Indicador de scroll — centrado abajo, aparece al terminar */}
+        <div
+          className="md:hidden flex justify-center"
+          style={{
+            position:      "absolute",
+            bottom:        26,
+            left:          0,
+            right:         0,
+            zIndex:        3,
+            pointerEvents: "none",
+          }}
+        >
+          <div
+            ref={cueRef}
+            className="flex flex-col items-center font-body"
+            style={{ gap: 5, opacity: 0 }}
+          >
+            <span style={{
+              fontSize:      9,
+              letterSpacing: "0.24em",
+              textTransform: "uppercase",
+              color:         "rgba(240,237,232,0.5)",
+            }}>
+              Seguí
+            </span>
+            <span style={{
+              fontSize:  13,
+              color:     "#F2BF1A",
+              animation: "act1-cue 1.6s ease-in-out infinite",
+            }}>
+              ↓
+            </span>
+          </div>
+        </div>
+
         {/* Aparece cuando solo queda la X centrada */}
         <p
           ref={textRef}
@@ -291,6 +407,7 @@ export default function Act1LaX() {
             opacity:        0,
             pointerEvents:  "none",
             userSelect:     "none",
+            zIndex:         4,
             textShadow:     "0 2px 32px rgba(0,0,0,0.9), 0 0 80px rgba(0,0,0,0.7)",
           }}
           aria-hidden="true"

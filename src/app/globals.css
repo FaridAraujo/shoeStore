@@ -77,9 +77,10 @@ body {
   }
 
 
-  /* ── About — reduce track height so scrub sections don't steal scroll on mobile */
-  .act1-track { height: 100dvh !important; }
-  .act2-track { height: 100dvh !important; }
+  /* ── About — track heights en mobile ───────────────────────────────── */
+  /* act1: 200dvh → 100dvh de pin, animación lenta y controlable con scrub */
+  .act1-track { height: 200dvh !important; }
+  .act2-track { height: 120dvh !important; }
 
   /* ── Sucursales — reduce padding de items para igualar alto de la foto ── */
   [data-location-item] { padding-top: 7px !important; padding-bottom: 7px !important; }
@@ -229,6 +230,12 @@ body {
 /* Login — submit button spinner */
 @keyframes sneax-spin {
   to { transform: rotate(360deg); }
+}
+
+/* About Act 1 — scroll cue gentle bounce */
+@keyframes act1-cue {
+  0%, 100% { transform: translateY(0);   opacity: 0.9; }
+  50%      { transform: translateY(4px); opacity: 0.45; }
 }
 
 /* FeaturedDrop — floating sneaker + shadow pulse */

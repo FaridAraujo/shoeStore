@@ -327,14 +327,26 @@ export default function Act5CostaRica() {
 
   useEffect(() => {
     if (!sectionRef.current) return;
-    const ctx = gsap.context(() => {
-      const trigger = { trigger: sectionRef.current, start: "top 65%", once: true };
-      gsap.from("[data-act5-headline]", { opacity: 0, y: 32, duration: 0.7, ease: "power3.out", scrollTrigger: trigger });
-      gsap.from("[data-act5-tabs]",     { opacity: 0, y: 20, duration: 0.7, ease: "power3.out", delay: 0.08, scrollTrigger: trigger });
-      gsap.from("[data-act5-map]",      { opacity: 0, scale: 0.96, duration: 0.8, ease: "power3.out", delay: 0.16, transformOrigin: "center center", scrollTrigger: trigger });
-      gsap.from("[data-act5-panel]",    { opacity: 0, x: 24, duration: 0.8, ease: "power3.out", delay: 0.2, scrollTrigger: trigger });
-    }, sectionRef);
-    return () => ctx.revert();
+
+    const mm = gsap.matchMedia();
+
+    // ── Desktop — entrada animada con scroll ─────────────────────────────────
+    mm.add("(min-width: 769px)", () => {
+      const ctx = gsap.context(() => {
+        const trigger = { trigger: sectionRef.current, start: "top 65%", once: true };
+        gsap.from("[data-act5-headline]", { opacity: 0, y: 32, duration: 0.7, ease: "power3.out", scrollTrigger: trigger });
+        gsap.from("[data-act5-tabs]",     { opacity: 0, y: 20, duration: 0.7, ease: "power3.out", delay: 0.08, scrollTrigger: trigger });
+        gsap.from("[data-act5-map]",      { opacity: 0, scale: 0.96, duration: 0.8, ease: "power3.out", delay: 0.16, transformOrigin: "center center", scrollTrigger: trigger });
+        gsap.from("[data-act5-panel]",    { opacity: 0, x: 24, duration: 0.8, ease: "power3.out", delay: 0.2, scrollTrigger: trigger });
+      }, sectionRef);
+      return () => ctx.revert();
+    });
+
+    // ── Mobile — sin animaciones de entrada para que el contenido nunca quede
+    //    en opacity:0. El gsap.from inicializa los elementos en invisible; si el
+    //    trigger falla (cálculo de posición con sticky sections) quedan en blanco.
+
+    return () => mm.revert();
   }, []);
 
   return (
