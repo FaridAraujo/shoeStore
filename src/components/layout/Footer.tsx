@@ -32,6 +32,17 @@ function IconInstagram() {
   );
 }
 
+function IconTikTok() {
+  return (
+    <svg width="16" height="18" viewBox="0 0 24 27" fill="none" aria-hidden="true">
+      <path
+        d="M17 0h-4v17.5a4 4 0 1 1-4-4v-4a8 8 0 1 0 8 8V8.5A12.6 12.6 0 0 0 24 9V5a8.6 8.6 0 0 1-7-5Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
 function IconWhatsApp() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -233,6 +244,9 @@ export default function Footer() {
             </span>
             <SocialLink href="https://instagram.com/sneax_cr" label="Instagram @sneax_cr">
               <IconInstagram />
+            </SocialLink>
+            <SocialLink href="https://www.tiktok.com/@sneax_costarica" label="TikTok @sneax_costarica">
+              <IconTikTok />
             </SocialLink>
             <SocialLink href="https://wa.me/50688888888" label="WhatsApp">
               <IconWhatsApp />
