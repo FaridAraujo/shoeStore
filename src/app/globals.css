@@ -37,6 +37,8 @@ body {
   .fd-cta      { width: 100% !important; }
   /* Carousel sube al tope — borde pasa de arriba a abajo */
   .fd-carousel { order: -1; border-top: none !important; border-bottom: 1px solid #B8B4AC; }
+  /* Dots siguen al carousel (ambos order -1, DOM order los mantiene en secuencia) */
+  .fd-dots     { order: -1; }
 
   /* ── ProductDetail mobile layout ──────────────────────────────────── */
   .pd-layout    { flex-direction: column !important; min-height: 0 !important; }
@@ -74,6 +76,10 @@ body {
     flex: 1 !important;
   }
 
+
+  /* ── About — reduce track height so scrub sections don't steal scroll on mobile */
+  .act1-track { height: 100dvh !important; }
+  .act2-track { height: 100dvh !important; }
 
   /* ── Sucursales — reduce padding de items para igualar alto de la foto ── */
   [data-location-item] { padding-top: 7px !important; padding-bottom: 7px !important; }

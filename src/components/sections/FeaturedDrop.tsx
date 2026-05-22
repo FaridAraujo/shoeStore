@@ -77,11 +77,26 @@ const INFO_TRANSITION = { duration: 0.38, ease: [0.23, 1, 0.32, 1] as const };
 export default function FeaturedDrop() {
   const [activeId, setActiveId]   = useState<ProductId>("asics-gel-1130");
   const [imgError, setImgError]   = useState(false);
-  const active = PRODUCTS.find((p) => p.id === activeId) ?? PRODUCTS[0];
-  const sectionRef = useRef<HTMLElement>(null);
+  const active      = PRODUCTS.find((p) => p.id === activeId) ?? PRODUCTS[0];
+  const activeIndex = PRODUCTS.findIndex((p) => p.id === activeId);
+  const sectionRef  = useRef<HTMLElement>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
 
   // Reset error state whenever the active product changes
   useEffect(() => { setImgError(false); }, [activeId]);
+
+  // Auto-scroll carousel to keep active thumb visible on mobile
+  useEffect(() => {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
+    const thumb = carousel.children[activeIndex] as HTMLElement | undefined;
+    if (thumb) thumb.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }, [activeIndex]);
+
+  function navigate(dir: 1 | -1) {
+    const next = PRODUCTS[(activeIndex + dir + PRODUCTS.length) % PRODUCTS.length];
+    setActiveId(next.id);
+  }
 
   // ── GSAP entry animations ─────────────────────────────────────────────────
   useEffect(() => {
@@ -144,6 +159,40 @@ export default function FeaturedDrop() {
           >
             {active.brand.toUpperCase()}
           </motion.span>
+
+          {/* Flechas de navegación — mobile only */}
+          <div className="md:hidden absolute bottom-5 left-0 right-0 flex justify-between px-5 z-20 pointer-events-none">
+            <button
+              onClick={() => navigate(-1)}
+              aria-label="Producto anterior"
+              className="pointer-events-auto"
+              style={{
+                width: 36, height: 36, borderRadius: "50%",
+                background: "rgba(10,10,10,0.55)",
+                border: "none", cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                color: "#F0EDE8", fontSize: 16, lineHeight: 1,
+                backdropFilter: "blur(6px)",
+              }}
+            >
+              ‹
+            </button>
+            <button
+              onClick={() => navigate(1)}
+              aria-label="Producto siguiente"
+              className="pointer-events-auto"
+              style={{
+                width: 36, height: 36, borderRadius: "50%",
+                background: "rgba(10,10,10,0.55)",
+                border: "none", cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                color: "#F0EDE8", fontSize: 16, lineHeight: 1,
+                backdropFilter: "blur(6px)",
+              }}
+            >
+              ›
+            </button>
+          </div>
 
           {/* Sneaker + shadow
               motion.div handles enter animation (key swap).
@@ -300,8 +349,9 @@ export default function FeaturedDrop() {
 
       {/* ── Carousel ──────────────────────────────────────────────────────── */}
       <div
+        ref={carouselRef}
         className="fd-carousel w-full flex overflow-x-auto"
-        style={{ background: "#D4D0C8", borderTop: "1px solid #B8B4AC", flexShrink: 0 }}
+        style={{ background: "#D4D0C8", borderTop: "1px solid #B8B4AC", flexShrink: 0, scrollbarWidth: "none" }}
       >
         {PRODUCTS.map((product) => {
           const isActive = product.id === activeId;
@@ -349,6 +399,34 @@ export default function FeaturedDrop() {
                 </span>
               </div>
             </button>
+          );
+        })}
+      </div>
+      {/* Dots — mobile only, debajo de la tira de thumbnails.
+          order: -1 para que queden junto al fd-carousel (que también es order -1)
+          y ambos aparezcan antes del fd-main en el flex column mobile. */}
+      <div
+        className="md:hidden flex justify-center gap-[7px] py-3 fd-dots"
+        style={{ background: "#D4D0C8" }}
+      >
+        {PRODUCTS.map((p) => {
+          const isActive = p.id === activeId;
+          return (
+            <button
+              key={p.id}
+              onClick={() => setActiveId(p.id)}
+              aria-label={`Ver ${p.brand} ${p.name}`}
+              style={{
+                width:        isActive ? 18 : 6,
+                height:       6,
+                borderRadius: 3,
+                background:   isActive ? "#F2BF1A" : "rgba(10,10,10,0.22)",
+                border:       "none",
+                cursor:       "pointer",
+                padding:      0,
+                transition:   "width 300ms cubic-bezier(0.23,1,0.32,1), background 300ms ease",
+              }}
+            />
           );
         })}
       </div>

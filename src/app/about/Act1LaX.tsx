@@ -191,7 +191,33 @@ export default function Act1LaX() {
   useEffect(() => {
     if (!trackRef.current || !textRef.current) return;
 
-    const ctx = gsap.context(() => {
+    const mm = gsap.matchMedia();
+
+    // ── Mobile — auto-play animation, no scrub ────────────────────────────────
+    mm.add("(max-width: 768px)", () => {
+      const proxy    = { value: 0 };
+      const duration = 2.8;
+      const trigger  = { trigger: trackRef.current, start: "top 60%", once: true };
+
+      const tl = gsap.timeline({ scrollTrigger: trigger });
+
+      tl.to(proxy, {
+        value: 1, duration, ease: "power2.inOut",
+        onUpdate() { progressRef.current = proxy.value; },
+      }, 0);
+
+      // Text fades in when the X is alone (~p 0.62) then out (~p 0.86)
+      tl.fromTo(
+        textRef.current,
+        { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, ease: "power2.out", duration: 0.45 },
+        0.62 * duration,
+      );
+      tl.to(textRef.current, { opacity: 0, ease: "power1.in", duration: 0.35 }, 0.86 * duration);
+    });
+
+    // ── Desktop — scrub atado al scroll ───────────────────────────────────────
+    mm.add("(min-width: 769px)", () => {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: trackRef.current,
@@ -212,13 +238,13 @@ export default function Act1LaX() {
         0.62,
       );
       tl.to(textRef.current, { opacity: 0, ease: "power1.in", duration: 0.10 }, 0.86);
-    }, trackRef);
+    });
 
-    return () => ctx.revert();
+    return () => mm.revert();
   }, []);
 
   return (
-    <div ref={trackRef} style={{ height: "175dvh" }}>
+    <div ref={trackRef} className="act1-track" style={{ height: "175dvh" }}>
       <section
         data-nav-theme="dark"
         style={{

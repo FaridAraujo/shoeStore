@@ -21,8 +21,29 @@ export default function Act2Espacio() {
   useEffect(() => {
     if (!trackRef.current) return;
 
-    const ctx = gsap.context(() => {
-      // Set initial state — words hidden below
+    const mm = gsap.matchMedia();
+
+    // ── Mobile — one-shot entry animation (no scrub, no incomplete frames) ──
+    mm.add("(max-width: 768px)", () => {
+      gsap.set(wordsRef.current, { opacity: 0, y: 36 });
+      gsap.set(subtextRef.current, { opacity: 0, y: 16 });
+
+      const trigger = { trigger: trackRef.current, start: "top 70%", once: true };
+
+      gsap.to(wordsRef.current, {
+        opacity: 1, y: 0,
+        stagger: 0.07, duration: 0.55, ease: "power3.out",
+        scrollTrigger: trigger,
+      });
+      gsap.to(subtextRef.current, {
+        opacity: 1, y: 0, duration: 0.5, ease: "power2.out",
+        delay: 0.65,
+        scrollTrigger: trigger,
+      });
+    });
+
+    // ── Desktop — scrub atado al scroll ────────────────────────────────────
+    mm.add("(min-width: 769px)", () => {
       gsap.set(wordsRef.current, { opacity: 0, y: 36 });
       gsap.set(subtextRef.current, { opacity: 0, y: 16 });
 
@@ -35,35 +56,23 @@ export default function Act2Espacio() {
         },
       });
 
-      // Words stagger in across 0–40% of scroll progress
-      // stagger 0.02 × 8 words = last word starts at 0.16, ends at 0.16+0.18 = 0.34
-      tl.to(
-        wordsRef.current,
-        {
-          opacity:  1,
-          y:        0,
-          stagger:  0.02,
-          ease:     "power3.out",
-          duration: 0.18,
-        },
-        0,
-      );
+      tl.to(wordsRef.current, {
+        opacity: 1, y: 0,
+        stagger: 0.02, ease: "power3.out", duration: 0.18,
+      }, 0);
 
-      // Subtext fades in at 45%
-      tl.to(
-        subtextRef.current,
-        { opacity: 1, y: 0, ease: "power2.out", duration: 0.2 },
-        0.45,
-      );
-    }, trackRef);
+      tl.to(subtextRef.current, {
+        opacity: 1, y: 0, ease: "power2.out", duration: 0.2,
+      }, 0.45);
+    });
 
-    return () => ctx.revert();
+    return () => mm.revert();
   }, []);
 
   let wordIndex = 0;
 
   return (
-    <div ref={trackRef} style={{ height: "200dvh" }}>
+    <div ref={trackRef} className="act2-track" style={{ height: "200dvh" }}>
       <section
         data-nav-theme="light"
         style={{
