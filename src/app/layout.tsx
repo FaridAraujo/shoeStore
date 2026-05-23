@@ -19,19 +19,19 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: "SNEAX — Premium Sneakers Costa Rica",
-    template: "%s | SNEAX",
+    default: "Sneax CR",
+    template: "%s | Sneax CR",
   },
   description:
-    "La tienda de sneakers premium de Costa Rica. Drops exclusivos, marcas selectas, cultura auténtica.",
-  keywords: ["sneakers", "zapatillas", "Costa Rica", "premium", "SNEAX"],
+    "La tienda de sneakers de Costa Rica. Drops exclusivos, marcas selectas, cultura auténtica.",
+  keywords: ["sneakers", "zapatillas", "Costa Rica", "SNEAX"],
   // Prevents Chrome / browser auto-translation from wrapping text nodes in
   // <font> tags — that DOM mutation desyncs React's fiber tree and causes
   // "removeChild: node is not a child" crashes on route navigation.
   other: { google: "notranslate" },
   openGraph: {
-    title: "SNEAX — Premium Sneakers Costa Rica",
-    description: "La tienda de sneakers premium de Costa Rica.",
+    title: "Sneax CR",
+    description: "La tienda de sneakers de Costa Rica. Drops exclusivos, marcas selectas, cultura auténtica.",
     locale: "es_CR",
     type: "website",
   },
