@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function HeroVideo() {
-  const [failed, setFailed] = useState(false);
+  const [failed, setFailed]   = useState(false);
+  const videoRef              = useRef<HTMLVideoElement>(null);
 
   const handleError = () => {
     console.warn(
@@ -11,6 +12,39 @@ export default function HeroVideo() {
     );
     setFailed(true);
   };
+
+  // Llamada manual a .play() — más confiable que el atributo autoPlay en iOS Safari.
+  // El atributo puede ser ignorado si la página cargó en background, el usuario
+  // volvió de otra pestaña, o la red fue lenta. .play() fuerza la reproducción.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    function tryPlay() {
+      video!.play().catch(() => {
+        // Silenciar — si el browser bloquea el autoplay no hay nada que hacer,
+        // el video simplemente no se reproduce (no es un error crítico).
+      });
+    }
+
+    // Intentar en cuanto el componente monta
+    tryPlay();
+
+    // Reintentar cuando el video tenga datos suficientes para reproducirse
+    video.addEventListener("canplay", tryPlay);
+
+    // Reintentar si la página vuelve al primer plano (ej. el usuario cambió de
+    // pestaña y volvió — en iOS el video se pausa automáticamente al salir)
+    function onVisibilityChange() {
+      if (document.visibilityState === "visible") tryPlay();
+    }
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+      video.removeEventListener("canplay", tryPlay);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, []);
 
   if (failed) return null;
 
@@ -27,6 +61,7 @@ export default function HeroVideo() {
 
   return (
     <video
+      ref={videoRef}
       autoPlay
       muted
       loop
