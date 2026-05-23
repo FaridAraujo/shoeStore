@@ -342,7 +342,7 @@ export default function ProductDetail({ product }: { product: Product }) {
         data-nav-theme="light"
         className="w-full flex items-center relative"
         style={{
-          minHeight: "100dvh",
+          minHeight: "100svh",
           background: "#E8E6E1",
           padding: "clamp(5rem, 8vw, 7rem) clamp(1.5rem, 5vw, 5rem)",
         }}

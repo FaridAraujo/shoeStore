@@ -24,9 +24,9 @@ export default function HeroAnimations() {
         // ── Three-act word reveal ──────────────────────────────────────────
         // The hero is held in place by CSS `position: sticky` (see Hero.tsx),
         // NOT by GSAP pin — so this ScrollTrigger only scrubs the timeline,
-        // it never touches the DOM. Driven by the 240dvh [data-hero-track]:
+        // it never touches the DOM. Driven by the 240svh [data-hero-track]:
         // start when the track top hits the viewport top, end when its
-        // bottom hits the viewport bottom (= the 140dvh sticky travel).
+        // bottom hits the viewport bottom (= the 140svh sticky travel).
         //
         // Each word occupies ~27% of that travel, with pauses between them
         // so the reader registers each word before the next rises.

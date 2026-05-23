@@ -91,13 +91,13 @@ export default function Act2Espacio() {
   let wordIndex = 0;
 
   return (
-    <div ref={trackRef} className="act2-track" style={{ height: "200dvh" }}>
+    <div ref={trackRef} className="act2-track" style={{ height: "200svh" }}>
       <section
         data-nav-theme="light"
         style={{
           position:       "sticky",
           top:            0,
-          height:         "100dvh",
+          height:         "100svh",
           background:     "#E8E6E1",
           display:        "flex",
           flexDirection:  "column",

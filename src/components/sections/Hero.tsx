@@ -73,8 +73,8 @@ export default function Hero() {
   return (
     <>
       {/*
-        Scroll track — 240dvh tall. The hero section sticks inside it for
-        140dvh of travel (240 − 100), driving the word-reveal timeline.
+        Scroll track — 240svh tall. The hero section sticks inside it for
+        140svh of travel (240 − 100), driving the word-reveal timeline.
         CSS `position: sticky` replaces GSAP `pin: true`: it produces the
         same fixed-while-scrolling effect WITHOUT injecting a pin-spacer
         <div> into the DOM. GSAP's pin-spacer is invisible to React's fiber
@@ -85,7 +85,7 @@ export default function Hero() {
         id="hero"
         data-hero-section
         data-nav-theme="dark"
-        className="h-[100dvh] w-full bg-[#0A0A0A] overflow-hidden flex flex-col items-center justify-center"
+        className="h-[100svh] w-full bg-[#0A0A0A] overflow-hidden flex flex-col items-center justify-center"
       >
         {/* Video layer */}
         <HeroVideo />

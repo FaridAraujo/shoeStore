@@ -167,7 +167,7 @@ function CuentaPage() {
   return (
     <main
       style={{
-        minHeight:      "100dvh",
+        minHeight:      "100svh",
         background:     "#0A0A0A",
         display:        "flex",
         flexDirection:  "column",

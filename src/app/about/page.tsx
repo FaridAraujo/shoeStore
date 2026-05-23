@@ -11,12 +11,12 @@ const Act1LaX        = dynamic(() => import("./Act1LaX"),        {
     <div
       className="act1-track"
       style={{
-        height: "175dvh",
+        height: "175svh",
         background: "#0A0A0A",
         display: "flex",
         alignItems: "flex-start",
         justifyContent: "center",
-        paddingTop: "35dvh",
+        paddingTop: "35svh",
       }}
     >
       <span

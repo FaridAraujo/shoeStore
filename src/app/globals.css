@@ -52,7 +52,7 @@ body {
   .pd-size-btn  { height: 44px !important; }
   .related-grid { grid-template-columns: repeat(2, 1fr) !important; }
 
-  /* ── FeaturedDrop — quita el minHeight de 100dvh en mobile para que no
+  /* ── FeaturedDrop — quita el minHeight de 100svh en mobile para que no
         deje espacio vacío debajo del contenido apilado ──────────────────── */
   #featured-drop { min-height: 0 !important; }
 
@@ -78,9 +78,9 @@ body {
 
 
   /* ── About — track heights en mobile ───────────────────────────────── */
-  /* act1/act2: 200dvh → 100dvh de pin para scrub controlable */
-  .act1-track { height: 200dvh !important; }
-  .act2-track { height: 200dvh !important; }
+  /* act1/act2: 200svh → 100svh de pin para scrub controlable */
+  .act1-track { height: 200svh !important; }
+  .act2-track { height: 200svh !important; }
 
   /* ── Sucursales — reduce padding de items para igualar alto de la foto ── */
   [data-location-item] { padding-top: 7px !important; padding-bottom: 7px !important; }

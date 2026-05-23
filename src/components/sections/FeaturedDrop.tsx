@@ -123,7 +123,7 @@ export default function FeaturedDrop() {
       id="featured-drop"
       data-nav-theme="light"
       className="w-full flex flex-col"
-      style={{ minHeight: "100dvh" }}
+      style={{ minHeight: "100svh" }}
     >
       {/* ── Two-column area ───────────────────────────────────────────────── */}
       <div className="fd-main flex flex-1">

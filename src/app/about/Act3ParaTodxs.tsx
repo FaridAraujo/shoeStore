@@ -41,7 +41,7 @@ export default function Act3ParaTodxs() {
       className="flex flex-col md:grid md:grid-cols-2"
       style={{
         background: "#0F0F0F",
-        minHeight:  "100dvh",
+        minHeight:  "100svh",
         overflow:   "hidden",
         position:   "relative",
       }}
@@ -118,7 +118,7 @@ export default function Act3ParaTodxs() {
         style={{
           position:  "relative",
           overflow:  "hidden",
-          minHeight: "40dvh",
+          minHeight: "40svh",
         }}
       >
         {/* Gradient — blends left edge into dark background */}

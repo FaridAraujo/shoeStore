@@ -277,13 +277,13 @@ export default function Act1LaX() {
   }, []);
 
   return (
-    <div ref={trackRef} className="act1-track" style={{ height: "175dvh" }}>
+    <div ref={trackRef} className="act1-track" style={{ height: "175svh" }}>
       <section
         data-nav-theme="dark"
         style={{
           position:   "sticky",
           top:        0,
-          height:     "100dvh",
+          height:     "100svh",
           background: "#0A0A0A",
           overflow:   "hidden",
         }}

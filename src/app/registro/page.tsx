@@ -279,7 +279,7 @@ function RegistroPage() {
   return (
     <div
       data-nav-theme="light"
-      style={{ minHeight: "100dvh", display: "flex", background: "#F0EDE8" }}
+      style={{ minHeight: "100svh", display: "flex", background: "#F0EDE8" }}
     >
       {/* ── Left panel ───────────────────────────────────────────────── */}
       <div style={{ flex: "0 0 46%", display: "flex" }} className="hidden-mobile">

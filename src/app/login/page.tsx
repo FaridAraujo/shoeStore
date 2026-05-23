@@ -250,7 +250,7 @@ function LoginPage() {
     <div
       data-nav-theme="light"
       style={{
-        minHeight:  "100dvh",
+        minHeight:  "100svh",
         display:    "flex",
         background: "#F0EDE8",
       }}

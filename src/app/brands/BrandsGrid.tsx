@@ -152,7 +152,7 @@ export default function BrandsGrid() {
     <section
       style={{
         background: "#0E0C0A",
-        minHeight:  "100dvh",
+        minHeight:  "100svh",
         padding:    "clamp(4rem, 7vw, 6rem) clamp(1.5rem, 5vw, 5rem)",
       }}
     >

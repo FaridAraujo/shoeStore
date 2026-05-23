@@ -44,7 +44,7 @@ function ConfirmationPage() {
     <main
       data-nav-theme="dark"
       style={{
-        minHeight: "100dvh",
+        minHeight: "100svh",
         background: "#0A0A0A",
         display: "flex",
         flexDirection: "column",
