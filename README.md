@@ -4,7 +4,7 @@
 > Designed and developed as a portfolio project with the goal of delivering a real product to a real client.
 
 ## Live Demo
-[sneax.vercel.app](https://sneax.vercel.app) *(update with final domain)*
+[shoe-store-one-eta.vercel.app](https://shoe-store-one-eta.vercel.app)
 
 ## Features
 
